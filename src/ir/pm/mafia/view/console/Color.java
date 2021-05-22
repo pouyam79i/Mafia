@@ -1,5 +1,12 @@
 package ir.pm.mafia.view.console;
 
+/**
+ * Color interface
+ * This interface contains code of colors.
+ * these codes are unicode.
+ * Used to have colorful console :)
+ * @author Pouya Mohammadi - CE@AUT - Uni ID: 9829039
+ */
 public interface Color {
 
     // Reset
@@ -66,13 +73,13 @@ public interface Color {
     String WHITE_BOLD_BRIGHT = "\033[1;97m"; // WHITE
 
     // High Intensity backgrounds
-    String BLACK_BACKGROUND_BRIGHT = "\033[0;100m";// BLACK
-    String RED_BACKGROUND_BRIGHT = "\033[0;101m";// RED
-    String GREEN_BACKGROUND_BRIGHT = "\033[0;102m";// GREEN
+    String BLACK_BACKGROUND_BRIGHT = "\033[0;100m"; // BLACK
+    String RED_BACKGROUND_BRIGHT = "\033[0;101m";   // RED
+    String GREEN_BACKGROUND_BRIGHT = "\033[0;102m"; // GREEN
     String YELLOW_BACKGROUND_BRIGHT = "\033[0;103m";// YELLOW
-    String BLUE_BACKGROUND_BRIGHT = "\033[0;104m";// BLUE
-    String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // PURPLE
+    String BLUE_BACKGROUND_BRIGHT = "\033[0;104m";  // BLUE
+    String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m";// PURPLE
     String CYAN_BACKGROUND_BRIGHT = "\033[0;106m";  // CYAN
-    String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";   // WHITE
+    String WHITE_BACKGROUND_BRIGHT = "\033[0;107m"; // WHITE
 
 }
