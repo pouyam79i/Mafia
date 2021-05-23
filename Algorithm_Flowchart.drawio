@@ -1,17 +1,17 @@
-<mxfile host="app.diagrams.net" modified="2021-05-24T01:35:42.120Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36" etag="E9_3Us9XQbpnUuDSHaSw" version="14.7.0" type="github">
+<mxfile host="app.diagrams.net" modified="2021-05-24T01:53:00.719Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36" etag="oroUQC72-GCRqma0XqPP" version="14.7.0" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="4777" dy="2393" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="R1UtStBijpKCtytlpwun-14" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="-335" y="585" width="2240" height="1880" as="geometry" />
+          <mxGeometry x="-200" y="600" width="1990" height="1810" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-1" target="R1UtStBijpKCtytlpwun-14">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-1" value="Main Game&amp;nbsp;&lt;br&gt;Process" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="745" y="390" width="80" height="100" as="geometry" />
+          <mxGeometry x="755" y="400" width="80" height="100" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-2" target="R1UtStBijpKCtytlpwun-3">
           <mxGeometry relative="1" as="geometry" />
@@ -22,8 +22,8 @@
         <mxCell id="R1UtStBijpKCtytlpwun-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-3" target="R1UtStBijpKCtytlpwun-5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="R1UtStBijpKCtytlpwun-3" value="Display Main Menu" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="980" y="770" width="120" height="60" as="geometry" />
+        <mxCell id="R1UtStBijpKCtytlpwun-3" value="Run Application(Once).&lt;br&gt;Display Main Menu." style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="975" y="770" width="130" height="60" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-5" target="R1UtStBijpKCtytlpwun-8">
           <mxGeometry relative="1" as="geometry" />
@@ -58,14 +58,14 @@
         <mxCell id="R1UtStBijpKCtytlpwun-21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-18" target="R1UtStBijpKCtytlpwun-20">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="R1UtStBijpKCtytlpwun-18" value="&lt;span&gt;Run A server&lt;/span&gt;&lt;br&gt;&lt;span&gt;Run A client&lt;/span&gt;&lt;br&gt;&lt;span&gt;Attach the client as server admin&lt;br&gt;Plus Display the server IP-Port&lt;br&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="R1UtStBijpKCtytlpwun-18" value="&lt;span&gt;Run A server (Lobby&amp;nbsp;of game)&lt;/span&gt;&lt;br&gt;&lt;span&gt;Run A client&lt;br&gt;&lt;/span&gt;Run a chatroom&lt;br&gt;&lt;span&gt;Attach the client as server admin&lt;br&gt;Plus Display the server IP-Port&lt;br&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="660" y="1020" width="189" height="80" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-20" target="R1UtStBijpKCtytlpwun-22">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="R1UtStBijpKCtytlpwun-20" value="Wait for other player to join&lt;br&gt;Check for other player connection&lt;br&gt;Run a chatroom&lt;br&gt;At the same time check if admin imported new setting" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="380" y="1016.25" width="216" height="87.5" as="geometry" />
+        <mxCell id="R1UtStBijpKCtytlpwun-20" value="Wait for other player to join.&lt;br&gt;At the same time read console &lt;br&gt;check if admin imported something" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="378" y="1030" width="220" height="60" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-26" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-22" target="R1UtStBijpKCtytlpwun-25">
           <mxGeometry relative="1" as="geometry" />
@@ -109,7 +109,8 @@
           <mxGeometry x="-0.8099" relative="1" as="geometry">
             <mxPoint x="139.99999999999977" y="1065" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="140" y="1055" />
+              <mxPoint x="140" y="1056" />
+              <mxPoint x="370" y="1056" />
             </Array>
             <mxPoint as="offset" />
           </mxGeometry>
@@ -140,15 +141,15 @@
         <mxCell id="R1UtStBijpKCtytlpwun-42" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-39" target="R1UtStBijpKCtytlpwun-41">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="R1UtStBijpKCtytlpwun-39" value="Run Game loop(Once)&lt;br&gt;At the same time check for other player connection and interaction (through network)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="225" y="1490" width="170" height="80" as="geometry" />
+        <mxCell id="R1UtStBijpKCtytlpwun-39" value="Run Game loop at server_side(Once).&lt;br&gt;Run Client game loop(Once).&lt;br&gt;At the same time check for players connection and interaction from server side (through network)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="225" y="1490" width="170" height="100" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-44" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-41" target="R1UtStBijpKCtytlpwun-39">
           <mxGeometry x="-0.8163" relative="1" as="geometry">
             <mxPoint x="130" y="1565" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="180" y="1740" />
-              <mxPoint x="180" y="1535" />
+              <mxPoint x="160" y="1739" />
+              <mxPoint x="160" y="1540" />
             </Array>
             <mxPoint as="offset" />
           </mxGeometry>
@@ -194,8 +195,8 @@
         <mxCell id="R1UtStBijpKCtytlpwun-60" value="Exit" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="1230" y="1257.5" width="105" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="R1UtStBijpKCtytlpwun-61" value="Terminate Program" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="1420" y="1270" width="120" height="80" as="geometry" />
+        <mxCell id="R1UtStBijpKCtytlpwun-61" value="Terminate Application" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="1420" y="1265" width="130" height="90" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-79" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-68" target="R1UtStBijpKCtytlpwun-78">
           <mxGeometry relative="1" as="geometry" />
@@ -234,6 +235,16 @@
         <mxCell id="R1UtStBijpKCtytlpwun-83" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-78" target="R1UtStBijpKCtytlpwun-82">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="R1UtStBijpKCtytlpwun-133" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-78" target="R1UtStBijpKCtytlpwun-112">
+          <mxGeometry x="-0.8899" relative="1" as="geometry">
+            <mxPoint x="472" y="1911" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="430" y="1610" />
+              <mxPoint x="430" y="2065" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-78" value="If&lt;br&gt;exit&lt;br&gt;enterd" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="1000" y="1570" width="80" height="80" as="geometry" />
         </mxCell>
@@ -261,14 +272,14 @@
         <mxCell id="R1UtStBijpKCtytlpwun-96" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-92" target="R1UtStBijpKCtytlpwun-95">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="R1UtStBijpKCtytlpwun-92" value="Join Server (Once).&lt;br&gt;Wait for admin to start game.&lt;br&gt;Also check connection" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="R1UtStBijpKCtytlpwun-92" value="Join Server (Once).&lt;br&gt;Join lobby(Once).&lt;br&gt;Wait for admin to start game.&lt;br&gt;Also check connection." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="1385" y="1860" width="130" height="70" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-109" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-94" target="R1UtStBijpKCtytlpwun-108">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="R1UtStBijpKCtytlpwun-94" value="Run Game Loop(Once)&lt;br&gt;Check for connection&lt;br&gt;And have interaction" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="950" y="1865" width="130" height="60" as="geometry" />
+        <mxCell id="R1UtStBijpKCtytlpwun-94" value="Run Game Loop(Once).&lt;br&gt;Check for connection.&lt;br&gt;Check interaction." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="950" y="1865" width="140" height="60" as="geometry" />
         </mxCell>
         <mxCell id="R1UtStBijpKCtytlpwun-97" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-95" target="R1UtStBijpKCtytlpwun-94">
           <mxGeometry relative="1" as="geometry" />
@@ -297,12 +308,12 @@
         <mxCell id="R1UtStBijpKCtytlpwun-111" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-108" target="R1UtStBijpKCtytlpwun-110">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="R1UtStBijpKCtytlpwun-125" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-108" target="R1UtStBijpKCtytlpwun-94">
+        <mxCell id="R1UtStBijpKCtytlpwun-125" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="R1UtStBijpKCtytlpwun-108" target="R1UtStBijpKCtytlpwun-94">
           <mxGeometry x="-0.8619" relative="1" as="geometry">
             <mxPoint x="820" y="2069" as="targetPoint" />
             <Array as="points">
               <mxPoint x="820" y="2010" />
-              <mxPoint x="1015" y="2010" />
+              <mxPoint x="1020" y="2010" />
             </Array>
             <mxPoint as="offset" />
           </mxGeometry>
