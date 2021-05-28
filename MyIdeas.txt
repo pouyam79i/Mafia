@@ -1,0 +1,17 @@
+Pouya Mohammadi –  CE@AUT – UNI ID: 9829039
+........
+Here I am going to ask myself how things must work in my application :)
+Then I will answer this question in each part :)
+........
+What are characters?
+  1- Well they must be an object.
+  2- Eahc of them has a diffrent 'action'.
+  3- All of them has same action for voting but If mayer exists, he can cansel it after he saw the result.
+  4- Each caracter is assinged to a unique player only once!
+  5- We can use a factory method to assing character plus singlton to make it unique :)
+........
+How players connect to the game?
+  1- Well each player has only one client, and client contains main information and abilities to stay connected to the server :)
+  2- <-- Read about socket programming :) -->
+........
+Algorithm of data transfere?
