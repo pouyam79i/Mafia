@@ -14,7 +14,7 @@ public abstract class Menu {
      */
     protected Console console;
     /**
-     * message contains menu interface!
+     * message contains menu text and interface!
      */
     protected String message;
 
@@ -28,14 +28,20 @@ public abstract class Menu {
     }
 
     /**
-     * deploys the menu interface and run it.
+     * displays the menu interface.
      */
-    public abstract void deploy();
+    public abstract void display();
+
+    /**
+     * It listen for menu input and returns a proper value (from user input)
+     * @return String
+     */
+    public abstract String listen();
 
     /**
      * This method updates the message of menu.
      * @param args it is set if any input required to updated message!
      */
-    protected abstract void updateMessage(String... args);
+    public abstract void updateMessage(String... args);
 
 }
