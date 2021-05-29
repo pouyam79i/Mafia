@@ -1,5 +1,6 @@
 package ir.pm.mafia.view.menu;
 
+import ir.pm.mafia.view.console.Color;
 import ir.pm.mafia.view.console.Console;
 
 /**
@@ -7,14 +8,14 @@ import ir.pm.mafia.view.console.Console;
  * contains the structure and required tools to show and handle a menu.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
  */
-public abstract class Menu {
+public abstract class Menu implements Color {
 
     /**
      * Console is used to interact with users
      */
     protected Console console;
     /**
-     * message contains menu interface!
+     * message contains menu text and interface!
      */
     protected String message;
 
@@ -28,14 +29,20 @@ public abstract class Menu {
     }
 
     /**
-     * deploys the menu interface and run it.
+     * displays the menu interface.
      */
-    public abstract void deploy();
+    public abstract void display();
+
+    /**
+     * It listen for menu input and returns a proper value (from user input)
+     * @return String
+     */
+    public abstract String listen();
 
     /**
      * This method updates the message of menu.
      * @param args it is set if any input required to updated message!
      */
-    protected abstract void updateMessage(String... args);
+    public abstract void updateMessage(String... args);
 
 }
