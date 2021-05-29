@@ -1,5 +1,6 @@
 package ir.pm.mafia.view.menu;
 
+import ir.pm.mafia.view.console.Color;
 import ir.pm.mafia.view.console.Console;
 
 /**
@@ -7,7 +8,7 @@ import ir.pm.mafia.view.console.Console;
  * contains the structure and required tools to show and handle a menu.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
  */
-public abstract class Menu {
+public abstract class Menu implements Color {
 
     /**
      * Console is used to interact with users
