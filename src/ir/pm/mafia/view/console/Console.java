@@ -1,6 +1,5 @@
 package ir.pm.mafia.view.console;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -57,12 +56,12 @@ public class Console {
         System.out.println(input);
     }
 
-    /**
-     * This method is used to clear the console!
-     */
-    public synchronized void clear(){
-        // ********************** Complete this part
-    }
+//    /**
+//     * This method is used to clear the console!
+//     */
+//    public synchronized void clear(){
+//        // ********************** Complete this part
+//    }
 
     /**
      * Return the console!
