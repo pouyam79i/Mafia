@@ -111,6 +111,8 @@ fabric.properties
 
 # Log file
 *.log
+# At this time I am developing so I don't like to update my log files
+log/
 
 # BlueJ files
 *.ctxt
