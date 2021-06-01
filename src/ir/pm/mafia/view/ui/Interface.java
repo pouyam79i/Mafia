@@ -1,13 +1,14 @@
 package ir.pm.mafia.view.ui;
 
+import ir.pm.mafia.model.utils.multithreading.Runnable;
 import ir.pm.mafia.view.console.Console;
 
 /**
  * This class contains the structure for all user interfaces.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
-public abstract class Interface implements Runnable{
+public abstract class Interface extends Runnable {
 
     /**
      * Contains running state,

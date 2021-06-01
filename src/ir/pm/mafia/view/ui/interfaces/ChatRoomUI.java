@@ -10,7 +10,7 @@ import ir.pm.mafia.view.ui.Interface;
  * This class contains the structure of chat room user interface!
  * It displays chat room new received messages!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class ChatRoomUI extends Interface{
 
@@ -73,6 +73,7 @@ public class ChatRoomUI extends Interface{
     @Override
     public void run() {
         display();
+        done = true;
     }
 
 }
