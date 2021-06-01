@@ -6,7 +6,7 @@ import java.util.LinkedList;
  * This class contains the structure of shared memory!
  * Used between to transfer data between threads!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class SharedMemory {
 
@@ -20,7 +20,7 @@ public class SharedMemory {
      * This is the shared memory structure!
      * Which is a LinkedList at this moment!
      */
-    private final LinkedList<DataBox> boxes;
+    private final LinkedList<Object> boxes;
     private int lastReadIndex;
 
     /**
@@ -30,7 +30,7 @@ public class SharedMemory {
      */
     public SharedMemory(boolean deleteMode){
         // Constructing a linked list!
-        boxes = new LinkedList<DataBox>();
+        boxes = new LinkedList<Object>();
         this.deleteMode = deleteMode;
         lastReadIndex = 0;
     }
@@ -45,8 +45,8 @@ public class SharedMemory {
      * it just reads new data and returns new data to user!
      * @return DataBox
      */
-    public synchronized DataBox get(){
-        DataBox dataBox = null;
+    public synchronized Object get(){
+        Object dataBox = null;
         if(boxes.size() > lastReadIndex)
             if(deleteMode)
                 dataBox = boxes.remove(0);
@@ -63,7 +63,7 @@ public class SharedMemory {
      * It adds new data as last data.
      * @param newBox will be added.
      */
-    public synchronized void put(DataBox newBox){
+    public synchronized void put(Object newBox){
         if(newBox != null)
             boxes.add(newBox);
     }
