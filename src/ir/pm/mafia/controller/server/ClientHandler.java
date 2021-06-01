@@ -17,7 +17,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class ClientHandler extends Runnable {
 
@@ -37,6 +37,11 @@ public class ClientHandler extends Runnable {
      * handles receiving process
      */
     private final Receive receiver;
+    /**
+     * Tells the state of interruption
+     * if interruption happens it will be true, else remains false!
+     */
+    private boolean clientHandlerInterrupted;
 
     /**
      * Constructor of ClientHandler
@@ -59,6 +64,7 @@ public class ClientHandler extends Runnable {
                     "server.ClientHandler");
             throw new IOException("Constructing new client handler failed");
         }
+        clientHandlerInterrupted = false;
         token = UUID.randomUUID().toString();
     }
 
@@ -75,11 +81,14 @@ public class ClientHandler extends Runnable {
             while (!finished);
             this.sender.close();
             this.receiver.close();
+            // Waiting about 0.1 second to make sure interruption does not happen
+            Thread.sleep(100);
             socket.close();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             Logger.error("ClientHandler Failed while running: " + e.getMessage(),
                     LogLevel.ServerFailed,
                     "server.ClientHandler");
+            clientHandlerInterrupted = true;
         }
         done = true;
     }
@@ -87,6 +96,9 @@ public class ClientHandler extends Runnable {
     //Getter
     public synchronized String getToken() {
         return token;
+    }
+    public synchronized boolean getClientHandlerConnectionState(){
+        return socket.isConnected() && (!clientHandlerInterrupted);
     }
 
 }
