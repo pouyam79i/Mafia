@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class Server {
 
@@ -50,6 +50,7 @@ public class Server {
      */
     public Server(int port) throws Exception {
         try {
+            clientHandlers = new ArrayList<ClientHandler>();
             serverSocket = new ServerSocket(port);
             executorService = Executors.newCachedThreadPool();
         }catch (IOException e){
@@ -123,6 +124,7 @@ public class Server {
         state = false;
         for(ClientHandler clientHandler : clientHandlers){
             clientHandler.close();
+            while (!clientHandler.isDone());
         }
         clientHandlers = null;
         executorService.shutdown();
