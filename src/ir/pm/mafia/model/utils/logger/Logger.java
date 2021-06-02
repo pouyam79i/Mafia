@@ -15,6 +15,7 @@ import java.util.Date;
  * write logs of program into the './log/'. ( This is my default :) )
  * Instantiating is not allowed.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
+ * @version 1.1
  */
 public class Logger {
 
@@ -98,6 +99,7 @@ public class Logger {
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             Date date = new Date();
             message += ",{\n";
+            message += "    \"Location\" : \"" + className + "\",\n";
             if(isError)
                 message += "    \"ErrorLevel\" : \"" + level + "\",\n";
             else
