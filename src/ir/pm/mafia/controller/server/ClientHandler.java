@@ -17,7 +17,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public class ClientHandler extends Runnable {
 
@@ -51,10 +51,10 @@ public class ClientHandler extends Runnable {
      * @param receiveBox shared memory used to handle receiving process
      * @throws IOException if failed in any way,
      */
-    public ClientHandler(Socket socket, SharedMemory sendBox, SharedMemory receiveBox) throws IOException {
+    public ClientHandler(Socket socket, SharedMemory sendBox, SharedMemory receiveBox) throws Exception {
         try {
-            if(socket == null || sendBox == null || receiveBox == null)
-                throw new IOException("Building clients failed because of null input");
+            if(socket == null)
+                throw new Exception("Building clients failed because of null socket");
             sender = new Send(sendBox, new ObjectOutputStream(socket.getOutputStream()));
             receiver = new Receive(receiveBox, new ObjectInputStream(socket.getInputStream()));
             this.socket = socket;
@@ -62,7 +62,7 @@ public class ClientHandler extends Runnable {
             Logger.error("Constructing new client handler failed: " + e.getMessage(),
                     LogLevel.ServerFailed,
                     "server.ClientHandler");
-            throw new IOException("Constructing new client handler failed");
+            throw new Exception("Constructing new client handler failed");
         }
         clientHandlerInterrupted = false;
         token = UUID.randomUUID().toString();
@@ -78,10 +78,10 @@ public class ClientHandler extends Runnable {
             Thread receiver = new Thread(this.receiver);
             sender.start();
             receiver.start();
-            while (!finished);
+            while (!finished) Thread.onSpinWait();
             this.sender.close();
             this.receiver.close();
-            // Waiting about 0.1 second to make sure interruption does not happen
+            while (!(this.sender.isDone()));
             Thread.sleep(100);
             socket.close();
         } catch (IOException | InterruptedException e) {
