@@ -11,7 +11,7 @@ import java.io.ObjectInputStream;
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class Receive extends Runnable {
 
@@ -31,7 +31,9 @@ public class Receive extends Runnable {
      * @param sharedMemory receive box
      * @param objectInputStream receiver object must be a (ObjectInputStream)
      */
-    public Receive(SharedMemory sharedMemory, ObjectInputStream objectInputStream){
+    public Receive(SharedMemory sharedMemory, ObjectInputStream objectInputStream) throws Exception{
+        if(sharedMemory == null || objectInputStream == null)
+            throw new Exception("Null inout");
         receiveBox = sharedMemory;
         this.objectInputStream = objectInputStream;
     }
@@ -42,9 +44,14 @@ public class Receive extends Runnable {
     @Override
     public void run() {
         try {
-            DataBox dataBox = (DataBox) objectInputStream.readObject();
-            if(dataBox != null)
-                receiveBox.put(dataBox);
+            while(!finished) {
+                DataBox dataBox = (DataBox) objectInputStream.readObject();
+                if (dataBox != null) {
+                    receiveBox.put(dataBox);
+//                    Logger.log("Receiving data finished!", LogLevel.Report, "Receive");
+                }
+                System.out.println("end");
+            }
         } catch (Exception e) {
             Logger.error("Failed while receiving data: " + e.getMessage(),
                     LogLevel.ThreadWarning,

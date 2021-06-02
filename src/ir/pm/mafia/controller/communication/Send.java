@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class Send extends Runnable {
 
@@ -31,7 +31,9 @@ public class Send extends Runnable {
      * @param sharedMemory send box
      * @param objectOutputStream sender object must be a (ObjectOutputStream)
      */
-    public Send(SharedMemory sharedMemory, ObjectOutputStream objectOutputStream){
+    public Send(SharedMemory sharedMemory, ObjectOutputStream objectOutputStream) throws Exception{
+        if(sharedMemory == null || objectOutputStream == null)
+            throw new Exception("Null input");
         sendBox = sharedMemory;
         this.objectOutputStream = objectOutputStream;
     }
@@ -48,6 +50,7 @@ public class Send extends Runnable {
                 if(dataBox != null){
                     objectOutputStream.writeObject(dataBox);
                     objectOutputStream.flush();
+//                    Logger.log("Sending data finished!", LogLevel.Report, "Send");
                 }
             }catch (Exception e){
                 Logger.error("Failed while transferring data: " + e.getMessage(),
