@@ -3,7 +3,7 @@ package ir.pm.mafia.model.utils.multithreading;
 /**
  * This class contains the structure of Runnable classes!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public abstract class Runnable implements java.lang.Runnable{
 
@@ -12,7 +12,7 @@ public abstract class Runnable implements java.lang.Runnable{
      * if false, thread is still running.
      * if true, the process of finishing begin!
      */
-    protected boolean finished;
+    protected volatile boolean finished;
     /**
      * contains the state of thread job.
      * if false, it means the job is not done.
