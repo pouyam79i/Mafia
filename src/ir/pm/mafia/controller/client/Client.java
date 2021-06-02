@@ -15,7 +15,7 @@ import java.net.Socket;
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public class Client extends Runnable {
 
@@ -44,8 +44,8 @@ public class Client extends Runnable {
      */
     public Client(String ip, int port,SharedMemory sendBox, SharedMemory receiveBox) throws Exception {
         try {
-            if(ip == null || sendBox == null || receiveBox == null)
-                throw new IOException("Null input");
+            if(ip == null)
+                throw new IOException("Null ip address");
             socket = new Socket(ip, port);
             sender = new Send(sendBox, new ObjectOutputStream(socket.getOutputStream()));
             receiver = new Receive(receiveBox, new ObjectInputStream(socket.getInputStream()));
@@ -62,18 +62,18 @@ public class Client extends Runnable {
      */
     @Override
     public void run() {
-        Thread send = new Thread(sender);
-        Thread receive = new Thread(receiver);
-        send.start();
-        receive.start();
-        while (!finished) Thread.onSpinWait();
         try {
-            sender.close();
-            receiver.close();
-            // Waiting 0.1 second to make sure interruption does not happen
+            Thread sender = new Thread(this.sender);
+            Thread receiver = new Thread(this.receiver);
+            sender.start();
+            receiver.start();
+            while (!finished) Thread.onSpinWait();
+            this.sender.close();
+            this.receiver.close();
+            while (!(this.sender.isDone()));
             Thread.sleep(100);
             socket.close();
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             Logger.error("Failed to close client properly" + e.getMessage(),
                     LogLevel.ClientDisconnected,
                     "client.Client");
