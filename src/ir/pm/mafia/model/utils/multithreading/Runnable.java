@@ -4,7 +4,7 @@ package ir.pm.mafia.model.utils.multithreading;
  * This class contains the structure of Runnable classes!
  * It can run a class as a new thread!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.2.1
  */
 public abstract class Runnable implements java.lang.Runnable{
 
