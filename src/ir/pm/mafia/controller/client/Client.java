@@ -13,7 +13,7 @@ import java.net.Socket;
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.3
+ * @version 1.3.1
  */
 public class Client extends Runnable {
 
@@ -46,48 +46,37 @@ public class Client extends Runnable {
      * @param receiveBox shared memory of receive box
      * @throws Exception if we have null input or failed to build a connection
      */
-    public Client(String ip, int port,SharedMemory sendBox, SharedMemory receiveBox) throws Exception {
+    public Client(String ip, int port,
+                  SharedMemory sendBox,
+                  SharedMemory receiveBox,
+                  String myToken) throws Exception {
         try {
             if(ip == null)
                 throw new IOException("Null ip address");
             socket = new Socket(ip, port);
 
             // Hand shake process
-            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+            this.myToken = myToken;
+            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+            System.out.println("before call");
             if(myToken == null){
                 outputStream.writeUTF("empty");
-                myToken = inputStream.readUTF();
+                this.myToken = (String) inputStream.readObject();
             }
-            else
-                outputStream.writeUTF(myToken);
+            else{
+                outputStream.writeUTF(this.myToken);
+            }
             outputStream.flush();
 
             // Memory Allocation
-            sender = new Send(sendBox, new ObjectOutputStream(socket.getOutputStream()));
-            receiver = new Receive(receiveBox, new ObjectInputStream(socket.getInputStream()));
+            sender = new Send(sendBox, outputStream);
+            receiver = new Receive(receiveBox, inputStream);
         }catch (Exception e){
             Logger.error("Client constructor failed!: " + e.getMessage(),
                     LogLevel.ClientFailed, "client.Client");
             throw new Exception("Failed to build a connection");
         }
-    }
-
-    /**
-     * Client constructor.
-     * Builds a safe connection to server.
-     * Sets requirements.
-     * Note that this constructor is used in admin mode :)
-     * @param ip IP of server
-     * @param port port of server
-     * @param sendBox shared memory of send box
-     * @param receiveBox shared memory of receive box
-     * @throws Exception if we have null input or failed to build a connection
-     */
-    public Client(String ip, int port,SharedMemory sendBox,
-                  SharedMemory receiveBox, String myToken) throws Exception {
-        this.myToken = myToken;
-        new Client(ip, port, sendBox, receiveBox);
     }
 
     /**
@@ -105,7 +94,7 @@ public class Client extends Runnable {
             this.sender.shutdown();
             this.receiver.shutdown();
             socket.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Logger.error("Failed to close client properly" + e.getMessage(),
                     LogLevel.ClientDisconnected,
                     "client.Client");
