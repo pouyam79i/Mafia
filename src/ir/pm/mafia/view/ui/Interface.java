@@ -1,12 +1,14 @@
 package ir.pm.mafia.view.ui;
 
+import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 import ir.pm.mafia.view.console.Console;
+import ir.pm.mafia.view.console.ConsoleListener;
 
 /**
  * This class contains the structure for all user interfaces.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public abstract class Interface extends Runnable {
 
@@ -19,13 +21,56 @@ public abstract class Interface extends Runnable {
      * console is used to print messages
      */
     protected final Console console;
+    /**
+     * Used to send DataBox!
+     */
+    protected final SharedMemory sendBox;
+    /**
+     * This memory is used to read new messages!
+     */
+    protected final SharedMemory receivedData;
+    /**
+     * listener. is used to read console input!
+     */
+    protected final ConsoleListener listener;
+    /**
+     * my token is used in data sending
+     */
+    protected final String myToken;
+    /**
+     * my name is used in data sending
+     */
+    protected final String myName;
+    /**
+     * listener state
+     */
+    protected boolean listeningState;
 
     /**
      * Constructor of Interface!
      * Setups requirements
+     * @param sendBox of will be used in interface to send data box
+     * @param receivedData is the input data which will be used to update display!
+     * @param myToken will be used to send data box
+     * @param myName will be used to send data box
+     * @throws Exception if failed to build UI
      */
-    public Interface(){
+    public Interface(SharedMemory sendBox,
+                     SharedMemory receivedData,
+                     String myToken,
+                     String myName) throws Exception {
+        if(sendBox == null || receivedData == null)
+            throw new Exception("Null input");
+        if(myToken == null)
+            myToken = "empty";
         console = Console.getConsole();
+        listener = ConsoleListener.getListener();
+        // set shared location to be able to update new messages!
+        this.sendBox = sendBox;
+        this.receivedData = receivedData;
+        this.myToken = myToken;
+        this.myName = myName;
+        listeningState = false;
     }
 
     /**
@@ -40,10 +85,10 @@ public abstract class Interface extends Runnable {
     public abstract void update(String... args);
 
     /**
-     * Closes the interface
+     * runs console input lister!
+     * and also helps to send new data if called!
+     * must be override
      */
-    public synchronized void close(){
-        finished = true;
-    }
+    public abstract void runListening();
 
 }
