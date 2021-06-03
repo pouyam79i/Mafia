@@ -1,4 +1,4 @@
-package ir.pm.mafia.controller.data;
+package ir.pm.mafia.model.game.state;
 
 import java.io.Serializable;
 
