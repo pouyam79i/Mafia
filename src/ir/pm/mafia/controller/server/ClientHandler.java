@@ -2,14 +2,13 @@ package ir.pm.mafia.controller.server;
 
 import ir.pm.mafia.controller.communication.Receive;
 import ir.pm.mafia.controller.communication.Send;
+import ir.pm.mafia.controller.data.Data;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.UUID;
 
@@ -17,7 +16,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.3
  */
 public class ClientHandler extends Runnable {
 
@@ -38,6 +37,14 @@ public class ClientHandler extends Runnable {
      */
     private final Receive receiver;
     /**
+     * shared memory used to handle sending process
+     */
+    private final SharedMemory sendBox;
+    /**
+     * shared memory used to handle receiving process
+     */
+    private final SharedMemory receiveBox;
+    /**
      * Tells the state of interruption
      * if interruption happens it will be true, else remains false!
      */
@@ -47,16 +54,31 @@ public class ClientHandler extends Runnable {
      * Constructor of ClientHandler
      * Setup requirements fields and data
      * @param socket contains the connection information
-     * @param sendBox shared memory used to handle sending process
-     * @param receiveBox shared memory used to handle receiving process
      * @throws IOException if failed in any way,
      */
-    public ClientHandler(Socket socket, SharedMemory sendBox, SharedMemory receiveBox) throws Exception {
+    public ClientHandler(Socket socket) throws Exception {
         try {
             if(socket == null)
                 throw new Exception("Building clients failed because of null socket");
-            sender = new Send(sendBox, new ObjectOutputStream(socket.getOutputStream()));
-            receiver = new Receive(receiveBox, new ObjectInputStream(socket.getInputStream()));
+
+            // Hand shake process!
+            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+            String handShake = inputStream.readUTF();
+            if(handShake.equals("empty")){
+                token = UUID.randomUUID().toString();
+                outputStream.writeObject(token);
+            }else{
+                token = handShake;
+                outputStream.writeObject("token accepted");
+            }
+            outputStream.flush();
+
+            // Memory allocation
+            sendBox = new SharedMemory(true);
+            receiveBox= new SharedMemory(true);
+            sender = new Send(sendBox, outputStream);
+            receiver = new Receive(receiveBox, inputStream);
             this.socket = socket;
         }catch (Exception e){
             Logger.error("Constructing new client handler failed: " + e.getMessage(),
@@ -65,7 +87,6 @@ public class ClientHandler extends Runnable {
             throw new Exception("Constructing new client handler failed");
         }
         clientHandlerInterrupted = false;
-        token = UUID.randomUUID().toString();
     }
 
     /**
@@ -73,32 +94,45 @@ public class ClientHandler extends Runnable {
      */
     @Override
     public void run() {
+        clientHandlerInterrupted = false;
         try {
-            Thread sender = new Thread(this.sender);
-            Thread receiver = new Thread(this.receiver);
             sender.start();
             receiver.start();
             while (!finished) Thread.onSpinWait();
-            this.sender.close();
-            this.receiver.close();
-            while (!(this.sender.isDone()));
-            Thread.sleep(100);
             socket.close();
-        } catch (IOException | InterruptedException e) {
+            sender.shutdown();
+            receiver.shutdown();
+        } catch (IOException e) {
             Logger.error("ClientHandler Failed while running: " + e.getMessage(),
                     LogLevel.ServerFailed,
                     "server.ClientHandler");
             clientHandlerInterrupted = true;
         }
-        done = true;
+    }
+
+    /**
+     * shutdown the thread
+     */
+    public void shutdown(){
+        finished = true;
+        try {
+            socket.close();
+        } catch (IOException ignored) {}
+        this.close();
     }
 
     //Getter
     public synchronized String getToken() {
         return token;
     }
-    public synchronized boolean getClientHandlerConnectionState(){
+    public synchronized boolean isConnected(){
         return socket.isConnected() && (!clientHandlerInterrupted);
+    }
+    public SharedMemory getSendBox() {
+        return sendBox;
+    }
+    public SharedMemory getReceiveBox() {
+        return receiveBox;
     }
 
 }
