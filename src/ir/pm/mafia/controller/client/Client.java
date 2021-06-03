@@ -7,30 +7,34 @@ import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.3
  */
 public class Client extends Runnable {
 
     /**
      * network socket
      */
-    private final Socket socket;
+    private Socket socket;
     /**
      * sender handles sending process
      */
-    private final Send sender;
+    private Send sender;
     /**
      * receiver handles receiving process
      */
-    private final Receive receiver;
+    private Receive receiver;
+    /**
+     * Client token
+     * This token will be null for admin,
+     * We set Amin token from another place!
+     */
+    private String myToken = null;
 
     /**
      * Client constructor.
@@ -47,6 +51,19 @@ public class Client extends Runnable {
             if(ip == null)
                 throw new IOException("Null ip address");
             socket = new Socket(ip, port);
+
+            // Hand shake process
+            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+            if(myToken == null){
+                outputStream.writeUTF("empty");
+                myToken = inputStream.readUTF();
+            }
+            else
+                outputStream.writeUTF(myToken);
+            outputStream.flush();
+
+            // Memory Allocation
             sender = new Send(sendBox, new ObjectOutputStream(socket.getOutputStream()));
             receiver = new Receive(receiveBox, new ObjectInputStream(socket.getInputStream()));
         }catch (Exception e){
@@ -54,6 +71,23 @@ public class Client extends Runnable {
                     LogLevel.ClientFailed, "client.Client");
             throw new Exception("Failed to build a connection");
         }
+    }
+
+    /**
+     * Client constructor.
+     * Builds a safe connection to server.
+     * Sets requirements.
+     * Note that this constructor is used in admin mode :)
+     * @param ip IP of server
+     * @param port port of server
+     * @param sendBox shared memory of send box
+     * @param receiveBox shared memory of receive box
+     * @throws Exception if we have null input or failed to build a connection
+     */
+    public Client(String ip, int port,SharedMemory sendBox,
+                  SharedMemory receiveBox, String myToken) throws Exception {
+        this.myToken = myToken;
+        new Client(ip, port, sendBox, receiveBox);
     }
 
     /**
@@ -68,17 +102,19 @@ public class Client extends Runnable {
             sender.start();
             receiver.start();
             while (!finished) Thread.onSpinWait();
-            this.sender.close();
-            this.receiver.close();
-            while (!(this.sender.isDone()));
-            Thread.sleep(100);
+            this.sender.shutdown();
+            this.receiver.shutdown();
             socket.close();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             Logger.error("Failed to close client properly" + e.getMessage(),
                     LogLevel.ClientDisconnected,
                     "client.Client");
         }
-        done = true;
+    }
+
+    // Getters
+    public String getMyToken() {
+        return myToken;
     }
 
 }
