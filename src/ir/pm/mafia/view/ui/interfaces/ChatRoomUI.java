@@ -1,5 +1,6 @@
 package ir.pm.mafia.view.ui.interfaces;
 
+import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.model.utils.logger.LogLevel;
@@ -10,14 +11,10 @@ import ir.pm.mafia.view.ui.Interface;
  * This class contains the structure of chat room user interface!
  * It displays chat room new received messages!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public class ChatRoomUI extends Interface{
 
-    /**
-     * This memory is used to read new messages!
-     */
-    private final SharedMemory sharedMemory;
     /**
      * Contains title message of chat room interface
      */
@@ -26,13 +23,19 @@ public class ChatRoomUI extends Interface{
     /**
      * Constructor of ChatRoomUI
      * Setup requirements
-     * @param sharedMemory of chat room
+     * @param sendBox of chat room
+     * @param receivedData is the input data which will be used to update display!
+     * @param myToken will be used to send data box
+     * @param myName will be used to send data box
      * @param title of chat room
+     * @throws Exception if failed to build UI
      */
-    public ChatRoomUI(SharedMemory sharedMemory, String title){
-        super();
-        // set shared location to be able to update new messages!
-        this.sharedMemory = sharedMemory;
+    public ChatRoomUI(SharedMemory sendBox,
+                      SharedMemory receivedData,
+                      String myToken,
+                      String myName,
+                      String title) throws Exception {
+        super(sendBox, receivedData, myToken, myName);
         this.title = title;
     }
 
@@ -41,13 +44,12 @@ public class ChatRoomUI extends Interface{
      */
     @Override
     protected void display() {
-        console.println("Chat room **** " + title + " ****");
         Message message = null;
         // Used to do 3 loop before finishing it!
         int counterKill = 0;
         while ((!finished) || counterKill < 3){
             try {
-                message = (Message) sharedMemory.get();
+                message = (Message) receivedData.get();
                 if(message != null)
                     console.println(message.getSenderName() + ": " + message.getMessageText());
             }catch (Exception e){
@@ -64,16 +66,49 @@ public class ChatRoomUI extends Interface{
      */
     @Override
     public synchronized void update(String... args) {
-        // No use here
+        display();
     }
+
+    /**
+     * This one runs the listener
+     */
+    @Override
+    public void runListening() {
+        if(!listeningState){
+            listener.start();
+            listeningState = true;
+        }
+        String input = (String) listener.getInputBox().get();
+        if(input != null)
+            if(input.equals(""))
+                return;
+        Message message = new Message(myToken, myName, input);
+        DataBox dataBox = new DataBox(null, message);
+    }
+
+
 
     /**
      * Runs the chatroom
      */
     @Override
     public void run() {
+        console.println("Chat room **** " + title + " ****");
         display();
-        done = true;
+        runListening();
+        while (!finished)
+            update();
+    }
+
+    /**
+     * It will shutdown listener and this ui
+     */
+    @Override
+    public void shutdown(){
+        if(listener != null)
+            listener.shutdown();
+        listeningState = false;
+        this.close();
     }
 
 }
