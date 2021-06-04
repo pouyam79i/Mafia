@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * It contains current state of game.
  * Server sends and client receive.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.1.1
  */
 public class GameState implements Serializable {
 
@@ -27,7 +27,7 @@ public class GameState implements Serializable {
      * Constructor of GameState
      * Sets important data
      * @param state state of game
-     * @param listOfOtherUsers list of other users' token who are in the same state
+     * @param listOfPlayers list of other users' token who are in the same state
      */
     public GameState(State state, ArrayList<String> listOfPlayers){
         this.state = state;
