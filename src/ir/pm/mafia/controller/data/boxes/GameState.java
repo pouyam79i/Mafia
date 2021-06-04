@@ -19,9 +19,9 @@ public class GameState implements Serializable {
      */
     private final State state;
     /**
-     * This list contains other users' token of the same state!
+     * This list contains users' token of the same state!
      */
-    private final ArrayList<String> listOfOtherUsers;
+    private final ArrayList<String> listOfPlayers;
 
     /**
      * Constructor of GameState
@@ -29,19 +29,19 @@ public class GameState implements Serializable {
      * @param state state of game
      * @param listOfOtherUsers list of other users' token who are in the same state
      */
-    public GameState(State state, ArrayList<String> listOfOtherUsers){
+    public GameState(State state, ArrayList<String> listOfPlayers){
         this.state = state;
-        this.listOfOtherUsers = listOfOtherUsers;
+        this.listOfPlayers = listOfPlayers;
     }
 
     // Getters
     public State getState() {
         return state;
     }
-    public ArrayList<String> getOtherUser() throws Exception {
-        if(listOfOtherUsers == null)
+    public ArrayList<String> getListOfPlayers() throws Exception {
+        if(listOfPlayers == null)
             throw new Exception("Returning Null");
-        return listOfOtherUsers;
+        return listOfPlayers;
     }
 
 }
