@@ -1,12 +1,14 @@
 package ir.pm.mafia.model.player;
 
 import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.view.console.Color;
+import ir.pm.mafia.view.console.Console;
 
 /**
  * Contains to hold player details.
  * Used in player-side only!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class Player {
 
@@ -55,12 +57,25 @@ public class Player {
         }
         return false;
     }
-    public boolean setNickname(String nickname) {
-        if(this.nickname == null && nickname != null){
-            this.nickname = nickname;
-            return true;
+    public void setNickname(String input) {
+        input = null;
+        // Setting nickname of player!
+        Console.getConsole().println(Color.YELLOW + "Please enter your nick name:");
+        Console.getConsole().println(Color.PURPLE + "  -This name will be displayed for other players");
+        while (input == null){
+            input = Console.getConsole().readConsole();
+            try {
+                if(input.split(" ")[0].equals("") || input.equals("")){
+                    Console.getConsole().println(Color.RED + "Invalid name");
+                    input = null;
+                }
+            }catch (Exception e){
+                Console.getConsole().println(Color.RED + "Invalid name");
+                input = null;
+            }
         }
-        return false;
+        nickname = input;
+
     }
     public boolean setCharacter(Character character) {
         if(this.character == null && character != null){
