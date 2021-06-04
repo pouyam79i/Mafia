@@ -11,7 +11,7 @@ import ir.pm.mafia.view.ui.Interface;
  * This class contains the structure of chat room user interface!
  * It displays chat room new received messages!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.3
  */
 public class ChatRoomUI extends Interface{
 
@@ -24,18 +24,18 @@ public class ChatRoomUI extends Interface{
      * Constructor of ChatRoomUI
      * Setup requirements
      * @param sendBox of chat room
-     * @param receivedData is the input data which will be used to update display!
+     * @param receivedBox is the input data which will be used to update display!
      * @param myToken will be used to send data box
      * @param myName will be used to send data box
      * @param title of chat room
      * @throws Exception if failed to build UI
      */
     public ChatRoomUI(SharedMemory sendBox,
-                      SharedMemory receivedData,
+                      SharedMemory receivedBox,
                       String myToken,
                       String myName,
                       String title) throws Exception {
-        super(sendBox, receivedData, myToken, myName);
+        super(sendBox, receivedBox, myToken, myName);
         this.title = title;
     }
 
@@ -44,19 +44,22 @@ public class ChatRoomUI extends Interface{
      */
     @Override
     protected void display() {
-        Message message = null;
+        DataBox dataBox = null;
         // Used to do 3 loop before finishing it!
         int counterKill = 0;
-        while ((!finished) || counterKill < 3){
+        while (counterKill < 2){
+            counterKill++;
             try {
-                message = (Message) receivedData.get();
-                if(message != null)
+                dataBox = (DataBox) receivedBox.get();
+                if(dataBox == null)
+                    continue;
+                if(!(dataBox.getData() instanceof Message))
+                    continue;
+                Message message = (Message) dataBox.getData();
                     console.println(message.getSenderName() + ": " + message.getMessageText());
             }catch (Exception e){
                 Logger.error("Failed to read display new message!", LogLevel.ThreadWarning, "ChatRoomUI");
             }
-            if(finished)
-                counterKill++;
         }
     }
 
@@ -67,6 +70,7 @@ public class ChatRoomUI extends Interface{
     @Override
     public synchronized void update(String... args) {
         display();
+        runListening();
     }
 
     /**
@@ -74,16 +78,19 @@ public class ChatRoomUI extends Interface{
      */
     @Override
     public void runListening() {
+
         if(!listeningState){
             listener.start();
             listeningState = true;
         }
         String input = (String) listener.getInputBox().get();
-        if(input != null)
-            if(input.equals(""))
-                return;
+        if(input == null)
+            return;
+        if(input.equals(""))
+            return;
         Message message = new Message(myToken, myName, input);
         DataBox dataBox = new DataBox(null, message);
+        sendBox.put(dataBox);
     }
 
 
@@ -94,8 +101,9 @@ public class ChatRoomUI extends Interface{
     @Override
     public void run() {
         console.println("Chat room **** " + title + " ****");
-        display();
+        listeningState = false;
         runListening();
+        display();
         while (!finished)
             update();
     }
