@@ -6,12 +6,13 @@ import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public class Receive extends Runnable {
 
@@ -48,16 +49,24 @@ public class Receive extends Runnable {
                 DataBox dataBox = (DataBox) objectInputStream.readObject();
                 if (dataBox != null) {
                     receiveBox.put(dataBox);
-//                    Logger.log("Receiving data finished!", LogLevel.Report, "Receive");
                 }
-                System.out.println("end");
             }
         } catch (Exception e) {
             Logger.error("Failed while receiving data: " + e.getMessage(),
                     LogLevel.ThreadWarning,
                     "communication.Receive");
         }
-        done = true;
+    }
+
+    /**
+     * Shutdown thread
+     */
+    @Override
+    public void shutdown(){
+        try {
+            objectInputStream.close();
+        } catch (IOException ignored) {}
+        this.close();
     }
 
 }

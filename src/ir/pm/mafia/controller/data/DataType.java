@@ -4,7 +4,7 @@ package ir.pm.mafia.controller.data;
  * This class contain data type!
  * Used to determine data types!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.0.1
  */
 public enum DataType {
 

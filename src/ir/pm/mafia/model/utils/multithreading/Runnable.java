@@ -2,8 +2,9 @@ package ir.pm.mafia.model.utils.multithreading;
 
 /**
  * This class contains the structure of Runnable classes!
+ * It can run a class as a new thread!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2.1
  */
 public abstract class Runnable implements java.lang.Runnable{
 
@@ -14,36 +15,64 @@ public abstract class Runnable implements java.lang.Runnable{
      */
     protected volatile boolean finished;
     /**
-     * contains the state of thread job.
-     * if false, it means the job is not done.
-     * if true, it means the job and thread is completely done!
-     *
+     * contains this thread
      */
-    protected boolean done;
+    private Thread thisThread;
+    /**
+     * Running state of thread
+     */
+    private boolean runningState;
 
     /**
      * Constructor of Runnable.
      * Setup required fields!
      */
     protected Runnable(){
-        finished = false;
-        done = false;
-    }
-
-    /**
-     * tells the thread to begin the process of finishing!
-     */
-    public synchronized void close(){
         finished = true;
+        runningState = false;
+        thisThread = null;
     }
 
     /**
-     * Tells if the thread is finished of not
-     * if true it means the thread is finished!
-     * @return finished state!
+     * Starts a thread to run this object run method!
      */
-    public synchronized boolean isDone() {
-        return done;
+    public synchronized void start(){
+        finished = false;
+        if(!runningState){
+            thisThread = new Thread(this);
+            runningState = true;
+            thisThread.start();
+        }
+    }
+
+    /**
+     * Tells the thread to begin the process of killing it self!
+     */
+    protected synchronized void close(){
+        finished = true;
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException ignored) {}
+        if (runningState)
+            thisThread.stop();
+        thisThread = null;
+        runningState = false;
+    }
+
+    /**
+     * Call for shutdown!
+     * override this method to have safer shutdown!
+     */
+    public synchronized void shutdown(){
+        this.close();
+    }
+
+    /**
+     * Tells if the thread is still running or not
+     * @return running state!
+     */
+    public synchronized boolean isRunning() {
+        return runningState;
     }
 
 }

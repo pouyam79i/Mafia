@@ -7,15 +7,13 @@ import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.4
  */
 public class Client extends Runnable {
 
@@ -31,6 +29,12 @@ public class Client extends Runnable {
      * receiver handles receiving process
      */
     private final Receive receiver;
+    /**
+     * Client token
+     * This token will be null for admin,
+     * We set Amin token from another place!
+     */
+    private String myToken = null;
 
     /**
      * Client constructor.
@@ -42,13 +46,36 @@ public class Client extends Runnable {
      * @param receiveBox shared memory of receive box
      * @throws Exception if we have null input or failed to build a connection
      */
-    public Client(String ip, int port,SharedMemory sendBox, SharedMemory receiveBox) throws Exception {
+    public Client(String ip, int port,
+                  SharedMemory sendBox,
+                  SharedMemory receiveBox,
+                  String myToken) throws Exception {
         try {
             if(ip == null)
                 throw new IOException("Null ip address");
             socket = new Socket(ip, port);
-            sender = new Send(sendBox, new ObjectOutputStream(socket.getOutputStream()));
-            receiver = new Receive(receiveBox, new ObjectInputStream(socket.getInputStream()));
+
+            // Hand shake process
+            System.out.println("Befora sh");
+            this.myToken = myToken;
+            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Before transfer");
+            if(this.myToken != null){
+                outputStream.writeUTF(this.myToken);
+                outputStream.flush();
+                String useless = inputStream.readUTF();
+            }
+            else{
+                outputStream.writeUTF("empty");
+                outputStream.flush();
+                this.myToken = inputStream.readUTF();
+            }
+            System.out.println("after sh");
+
+            // Memory Allocation
+            sender = new Send(sendBox, outputStream);
+            receiver = new Receive(receiveBox, inputStream);
         }catch (Exception e){
             Logger.error("Client constructor failed!: " + e.getMessage(),
                     LogLevel.ClientFailed, "client.Client");
@@ -68,17 +95,29 @@ public class Client extends Runnable {
             sender.start();
             receiver.start();
             while (!finished) Thread.onSpinWait();
-            this.sender.close();
-            this.receiver.close();
-            while (!(this.sender.isDone()));
-            Thread.sleep(100);
-            socket.close();
-        } catch (IOException | InterruptedException e) {
+        } catch (Exception e) {
             Logger.error("Failed to close client properly" + e.getMessage(),
                     LogLevel.ClientDisconnected,
                     "client.Client");
         }
-        done = true;
+    }
+
+    /**
+     * shutdown
+     */
+    @Override
+    public void shutdown(){
+        this.sender.shutdown();
+        this.receiver.shutdown();
+        try {
+            socket.close();
+        } catch (IOException e) {}
+        this.close();
+    }
+
+    // Getters
+    public String getMyToken() {
+        return myToken;
     }
 
 }

@@ -15,7 +15,7 @@ import java.util.Date;
  * write logs of program into the './log/'. ( This is my default :) )
  * Instantiating is not allowed.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public class Logger {
 
@@ -39,6 +39,10 @@ public class Logger {
      * At the end of program, this list will be printed!
      */
     private static final ArrayList<String> unsavedLogs = new ArrayList<String>();
+    /**
+     * When debug is true mode we print logs and errors!
+     */
+    private static boolean debugMode = false;
 
     /**
      * Constructor of logger
@@ -53,6 +57,8 @@ public class Logger {
      * @param className is where it happened
      */
     public static synchronized void log(String data, LogLevel level, String className){
+        if(!debugMode)
+            return;
         data = buildMessage(data, level.toString(), className, false);
         addToEndFoFile(data, ROOT_DIR + LOG_FILE);
     }
@@ -64,6 +70,8 @@ public class Logger {
      * @param className is where it happened
      */
     public static synchronized void error(String data, LogLevel level, String className){
+        if(!debugMode)
+            return;
         data = buildMessage(data, level.toString(), className, true);
         addToEndFoFile(data, ROOT_DIR + ERROR_FILE);
     }
@@ -73,6 +81,8 @@ public class Logger {
      * In case that appending logs or errors to their related file fails!
      */
     public static synchronized void printAllLostLogs(){
+        if(!debugMode)
+            return;
         Console console = Console.getConsole();
         for (String message : unsavedLogs){
             console.println(message);

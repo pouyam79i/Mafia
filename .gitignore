@@ -134,5 +134,8 @@ hs_err_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java
 
-# Ignoring test classes
+# Ignoring test classes... Developer Mode
 src/test
+
+# Ignore configs... Developer Mode
+configs

@@ -1,46 +1,59 @@
 package ir.pm.mafia.controller.server;
 
 import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.player.Player;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
+import ir.pm.mafia.model.utils.multithreading.Runnable;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.UUID;
 
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.4
  */
-public class Server {
+public class Server extends Runnable{
 
     /**
      * Welcoming server socket
      */
     private final ServerSocket serverSocket;
     /**
-     * Executor service
-     */
-    private final ExecutorService executorService;
-    /**
      * List of connected clients
      */
-    private ArrayList<ClientHandler> clientHandlers;
+    private ClientContainer clientContainer;
+    /**
+     * It this shared memory I put new connection box.
+     * Which contains a list of client handler.
+     * used to update server loop (god loop) of game!
+     */
+    private final SharedMemory connectionBox;
+    /**
+     * This token is generated for admin
+     * Only with token you can change server setting :)
+     */
+    private final String adminToken;
+    /**
+     * port of server
+     */
+    private final int port;
+    /**
+     * this the max number of connection
+     */
+    private int maxConnectionNumber;
     /**
      * number of connected clients
      */
     private int numberOfConnections;
     /**
-     * state of server service
-     * if true it means server is on!
-     * else it means server is off!
+     * Accepting mode is true when you are in lobby!
+     * If game is started! no more connection is accepted!
      */
-    private boolean state;
+    private boolean acceptingMode;
 
     /**
      * Server Constructor
@@ -50,99 +63,143 @@ public class Server {
      */
     public Server(int port) throws Exception {
         try {
-            clientHandlers = new ArrayList<ClientHandler>();
             serverSocket = new ServerSocket(port);
-            executorService = Executors.newCachedThreadPool();
+            connectionBox = new SharedMemory(true);
+            clientContainer = new ClientContainer(connectionBox);
+            this.port = port;
         }catch (IOException e){
             Logger.error("Field while constructing server" + e.getMessage(),
                     LogLevel.ServerFailed,
-                    "Server's Constructor");
+                    "Server");
             throw new Exception("Field while constructing server");
+        }finally {
+            // generating token for admin
+            adminToken = UUID.randomUUID().toString();
+            maxConnectionNumber = 10;
+            numberOfConnections = 0;
         }
-        state = true;
-        numberOfConnections = 0;
+    }
+
+    /**
+     * It ends the thread!
+     * so no more client accepting happens!
+     * but the server is alive!
+     */
+    public synchronized void endAccepting(){
+        acceptingMode = false;
+        clientContainer.lock();
+        this.close();
+    }
+
+    /**
+     * shutdown server service
+     */
+    @Override
+    public void shutdown(){
+        this.close();
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            Logger.error("Failed to kill server socket" + e.getMessage(),
+                    LogLevel.ServerFailed, "Server");
+        }
+        clientContainer.closeAll();
+        clientContainer = null;
+        Logger.log("Server shutdown finished!",
+                LogLevel.ShutdownCall,
+                "Server");
+    }
+
+    /**
+     * Server loop
+     */
+    @Override
+    public void run() {
+        while ((!finished) && acceptingMode){
+            while (numberOfConnections < maxConnectionNumber) {
+                try {
+                    waitForNewClient();
+                } catch (Exception e) {
+                    Logger.error("Joining new client failed: " + e.getMessage(),
+                            LogLevel.ServerFailed,
+                            "Server");
+                }
+            }
+        }
     }
 
     /**
      * updates the number of connected clients
      */
     private synchronized void updateNumberOfConnections(){
-        if(clientHandlers == null){
-            numberOfConnections = 0;
-            return;
-        }
-        Iterator<ClientHandler> chIt = clientHandlers.iterator();
-        while (chIt.hasNext()){
-            ClientHandler clientHandler = chIt.next();
-            if((!clientHandler.getClientHandlerConnectionState()) || (clientHandler.isDone())){
-                Logger.log("Client is disconnected so it will be removed",
-                        LogLevel.ClientDisconnected,
-                        "server.Server");
-                chIt.remove();
-            }
-        }
-        numberOfConnections = clientHandlers.size();
+        numberOfConnections = clientContainer.getNumberOfConnections();
     }
 
     /**
      * This method waits for a client to join server
-     * @param newSendBox shared memory used as send box of new connected client
-     * @param newReceiveBox shared memory used as receive box of new connected client
-     * @return true if the client connected successfully, else false!
      * @throws Exception if server is off and you try to call this method or because of null input!
      */
-    public synchronized boolean waitForNewClient(SharedMemory newSendBox,
-                                                 SharedMemory newReceiveBox) throws Exception{
-        if(!state)
+    private synchronized void waitForNewClient() throws Exception{
+        if(finished)
             throw new Exception("Server is shutdown");
-        if(newSendBox == null || newReceiveBox == null)
-            throw new Exception("Null input");
         ClientHandler newClient = null;
         try {
             Socket newConnectionSocket = serverSocket.accept();
-            newClient = new ClientHandler(newConnectionSocket , newSendBox, newReceiveBox);
-            Thread.sleep(10);
-            executorService.execute(newClient);
-            clientHandlers.add(newClient);
+            newClient = new ClientHandler(newConnectionSocket);
+            newClient.start();
+            clientContainer.add(newClient);
             updateNumberOfConnections();
-            Logger.log("New Client Connected!", LogLevel.Report, "server.Server");
-            return true;
+            Logger.log("New Client Connected!", LogLevel.Report, "Server");
         } catch (IOException | InterruptedException e) {
             Logger.error("Failed to join new client" + e.getMessage(),
                     LogLevel.ServerFailed,
-                    "server.Server");
+                    "Server");
             if(newClient != null)
-                newClient.close();
-            return false;
+                newClient.shutdown();
         }
     }
 
+    // Setters
     /**
-     * shutdown server service
+     * Assigns a player with admin token!
+     * @param player player will be admin!
+     * @return true if admin is set correctly
      */
-    public synchronized void shutdown(){
-        state = false;
-        for(ClientHandler clientHandler : clientHandlers){
-            clientHandler.close();
-            while (!clientHandler.isDone());
-        }
-        clientHandlers = null;
-        executorService.shutdown();
-        Logger.log("Server shutdown called!",
-                LogLevel.ShutdownCall,
-                "server.Server");
+    public boolean setAdmin(Player player){
+        return player.setToken(adminToken);
+    }
+    /**
+     * Sets max number of connection.
+     * It must be between 6 to 10.
+     * @param maxConnectionNumber will be set as max number of connection
+     * @return true if it could set this value!
+     */
+    public boolean setMaxConnectionNumber(int maxConnectionNumber) {
+        if(maxConnectionNumber > 10 || maxConnectionNumber < 5)
+            return false;
+        if(maxConnectionNumber < numberOfConnections)
+            return false;
+        this.maxConnectionNumber = maxConnectionNumber;
+        return true;
     }
 
+    // Getters
     /**
      * Returns number of connections.
      * If server is off and this method is call it returns -1
      * @return current number of connections.
      */
     public synchronized int getNumberOfConnections() {
-        if(!state)
+        if(finished)
             return -1;
         updateNumberOfConnections();
         return numberOfConnections;
+    }
+    public int getPort() {
+        return port;
+    }
+    public ClientContainer getClientContainer() {
+        return clientContainer;
     }
 
 }

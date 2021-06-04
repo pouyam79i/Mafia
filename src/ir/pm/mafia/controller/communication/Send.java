@@ -6,12 +6,13 @@ import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public class Send extends Runnable {
 
@@ -50,7 +51,6 @@ public class Send extends Runnable {
                 if(dataBox != null){
                     objectOutputStream.writeObject(dataBox);
                     objectOutputStream.flush();
-//                    Logger.log("Sending data finished!", LogLevel.Report, "Send");
                 }
             }catch (Exception e){
                 Logger.error("Failed while transferring data: " + e.getMessage(),
@@ -58,7 +58,17 @@ public class Send extends Runnable {
                         "communication.Send");
             }
         }
-        done = true;
+    }
+
+    /**
+     * Shutdown thread
+     */
+    @Override
+    public void shutdown(){
+        try {
+            objectOutputStream.close();
+        } catch (IOException ignored) {}
+        this.close();
     }
 
 }
