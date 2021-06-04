@@ -1,5 +1,6 @@
 package ir.pm.mafia.model.loops.godloop;
 
+import ir.pm.mafia.controller.data.Data;
 import ir.pm.mafia.controller.data.DataBase;
 import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.server.ClientHandler;
@@ -9,7 +10,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
  * This Class handles sending data from server to client
  * while client must read same data box!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class SenderHandler extends Runnable {
 
@@ -52,9 +53,11 @@ public class SenderHandler extends Runnable {
     public void run() {
         while (clientHandler.isConnected()){
             while (lastRead < sharedSendBox.getSize()){
-                DataBox dataBox = (DataBox) sharedSendBox.readData(lastRead);
-                if(!dataBox.getData().getSenderToken().equals(clientToken))
-                    clientHandler.send(dataBox);
+                Data data = (Data) sharedSendBox.readData(lastRead);
+                if(!clientToken.equals(data.getSenderToken())){
+                    DataBox newDataBox = new DataBox(null, data);
+                    clientHandler.send(newDataBox);
+                }
                 lastRead++;
             }
         }
