@@ -7,8 +7,9 @@ import java.util.Scanner;
  * plus it uses singleton pattern and also must be used in a synchronized way.
  * Console is used to make a good way to interact with user.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
+ * @version 1.1
  */
-public class Console {
+public class Console implements Color{
 
     /**
      * This is the only instance of Console
@@ -45,7 +46,7 @@ public class Console {
      * @param input will be printed
      */
     public synchronized void print(String input){
-        System.out.print(input);
+        System.out.print(input + RESET);
     }
 
     /**
@@ -53,15 +54,8 @@ public class Console {
      * @param input will be printed
      */
     public synchronized void println(String input){
-        System.out.println(input);
+        System.out.println(input + RESET);
     }
-
-//    /**
-//     * This method is used to clear the console!
-//     */
-//    public synchronized void clear(){
-//        // ********************** Complete this part
-//    }
 
     /**
      * Return the console!
