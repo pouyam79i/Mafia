@@ -8,7 +8,7 @@ import ir.pm.mafia.view.console.ConsoleListener;
 /**
  * This class contains the structure for all user interfaces.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.2.1
  */
 public abstract class Interface extends Runnable {
 
@@ -26,9 +26,9 @@ public abstract class Interface extends Runnable {
      */
     protected final SharedMemory sendBox;
     /**
-     * This memory is used to read new messages!
+     * This memory is used to read new data box!
      */
-    protected final SharedMemory receivedData;
+    protected final SharedMemory receivedBox;
     /**
      * listener. is used to read console input!
      */
@@ -50,16 +50,16 @@ public abstract class Interface extends Runnable {
      * Constructor of Interface!
      * Setups requirements
      * @param sendBox of will be used in interface to send data box
-     * @param receivedData is the input data which will be used to update display!
+     * @param receivedBox is the input data which will be used to update display!
      * @param myToken will be used to send data box
      * @param myName will be used to send data box
      * @throws Exception if failed to build UI
      */
     public Interface(SharedMemory sendBox,
-                     SharedMemory receivedData,
+                     SharedMemory receivedBox,
                      String myToken,
                      String myName) throws Exception {
-        if(sendBox == null || receivedData == null)
+        if(sendBox == null || receivedBox == null)
             throw new Exception("Null input");
         if(myToken == null)
             myToken = "empty";
@@ -67,7 +67,7 @@ public abstract class Interface extends Runnable {
         listener = ConsoleListener.getListener();
         // set shared location to be able to update new messages!
         this.sendBox = sendBox;
-        this.receivedData = receivedData;
+        this.receivedBox = receivedBox;
         this.myToken = myToken;
         this.myName = myName;
         listeningState = false;
