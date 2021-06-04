@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4
+ * @version 1.4.1
  */
 public class Server extends Runnable{
 
@@ -89,6 +89,7 @@ public class Server extends Runnable{
         acceptingMode = false;
         clientContainer.lock();
         this.close();
+        finished = false;
     }
 
     /**
@@ -200,6 +201,9 @@ public class Server extends Runnable{
     }
     public ClientContainer getClientContainer() {
         return clientContainer;
+    }
+    public SharedMemory getConnectionBox() {
+        return connectionBox;
     }
 
 }
