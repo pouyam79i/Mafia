@@ -1,5 +1,6 @@
 package ir.pm.mafia.model.loops.godloop;
 
+import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
@@ -7,7 +8,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
 /**
  * Handles receiving data boxes from client handler in god loop (server loop).
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class ReceiverHandler extends Runnable {
 
@@ -43,8 +44,11 @@ public class ReceiverHandler extends Runnable {
         try {
             Thread.sleep(100);
         } catch (InterruptedException ignored) {}
-        while (clientHandler.isConnected())
-            inputBox.put(clientHandler.checkReceiver().getData());
+        while (clientHandler.isConnected()){
+            DataBox newDataBox = clientHandler.checkReceiver();
+            if(newDataBox != null)
+                inputBox.put(newDataBox.getData());
+        }
         this.close();
     }
 
