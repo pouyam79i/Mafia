@@ -3,11 +3,13 @@ package ir.pm.mafia.view.console;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
+import java.util.Scanner;
+
 /**
  * Console listener is used to read inputs from console,
  * but in multithreading mode!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public class ConsoleListener extends Runnable {
 
@@ -19,7 +21,7 @@ public class ConsoleListener extends Runnable {
     /**
      * Using console to read inputs
      */
-    private final Console console;
+    private final Scanner scanner;
     /**
      * Shared memory is used to share input of console between threads
      */
@@ -31,7 +33,7 @@ public class ConsoleListener extends Runnable {
      */
     private ConsoleListener(){
         inputBox = new SharedMemory(true);
-        console = Console.getConsole();
+        scanner = new Scanner(System.in);
     }
 
     /**
@@ -41,8 +43,11 @@ public class ConsoleListener extends Runnable {
     public void run() {
         String input;
         while (!finished){
-            input = console.readConsole();
-            inputBox.put(input);
+            try{
+                input = scanner.nextLine();
+                if(input != null)
+                    inputBox.put(input);
+            }catch (Exception ignored){}
         }
     }
 
