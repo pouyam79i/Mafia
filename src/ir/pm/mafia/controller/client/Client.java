@@ -13,7 +13,7 @@ import java.net.Socket;
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4
+ * @version 1.4.1
  */
 public class Client extends Runnable {
 
@@ -56,11 +56,9 @@ public class Client extends Runnable {
             socket = new Socket(ip, port);
 
             // Hand shake process
-            System.out.println("Befora sh");
             this.myToken = myToken;
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-            System.out.println("Before transfer");
             if(this.myToken != null){
                 outputStream.writeUTF(this.myToken);
                 outputStream.flush();
@@ -71,7 +69,6 @@ public class Client extends Runnable {
                 outputStream.flush();
                 this.myToken = inputStream.readUTF();
             }
-            System.out.println("after sh");
 
             // Memory Allocation
             sender = new Send(sendBox, outputStream);
@@ -90,15 +87,13 @@ public class Client extends Runnable {
     @Override
     public void run() {
         try {
-            Thread sender = new Thread(this.sender);
-            Thread receiver = new Thread(this.receiver);
             sender.start();
             receiver.start();
             while (!finished) Thread.onSpinWait();
         } catch (Exception e) {
             Logger.error("Failed to close client properly" + e.getMessage(),
                     LogLevel.ClientDisconnected,
-                    "client.Client");
+                    "Client");
         }
     }
 
