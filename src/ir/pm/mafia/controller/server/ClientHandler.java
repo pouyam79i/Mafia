@@ -2,7 +2,7 @@ package ir.pm.mafia.controller.server;
 
 import ir.pm.mafia.controller.communication.Receive;
 import ir.pm.mafia.controller.communication.Send;
-import ir.pm.mafia.controller.data.Data;
+import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
@@ -16,7 +16,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.3
+ * @version 1.4
  */
 public class ClientHandler extends Runnable {
 
@@ -67,10 +67,10 @@ public class ClientHandler extends Runnable {
             String handShake = inputStream.readUTF();
             if(handShake.equals("empty")){
                 token = UUID.randomUUID().toString();
-                outputStream.writeObject(token);
+                outputStream.writeUTF(token);
             }else{
                 token = handShake;
-                outputStream.writeObject("token accepted");
+                outputStream.writeUTF("token accepted");
             }
             outputStream.flush();
 
@@ -90,6 +90,26 @@ public class ClientHandler extends Runnable {
     }
 
     /**
+     * This method puts a data box in send box
+     * @param dataBox will be send
+     */
+    public synchronized void send(DataBox dataBox){
+        if(!finished)
+            sendBox.put(dataBox);
+    }
+
+    /**
+     * This method checks if new data has received!
+     * if we have new data returns it, else returns null!
+     * @return DataBox
+     */
+    public synchronized DataBox checkReceiver(){
+        if(!finished)
+            return ((DataBox) receiveBox.get());
+        return null;
+    }
+
+    /**
      * Runs the connection to the client
      */
     @Override
@@ -99,10 +119,7 @@ public class ClientHandler extends Runnable {
             sender.start();
             receiver.start();
             while (!finished) Thread.onSpinWait();
-            socket.close();
-            sender.shutdown();
-            receiver.shutdown();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Logger.error("ClientHandler Failed while running: " + e.getMessage(),
                     LogLevel.ServerFailed,
                     "server.ClientHandler");
@@ -113,8 +130,11 @@ public class ClientHandler extends Runnable {
     /**
      * shutdown the thread
      */
+    @Override
     public void shutdown(){
         finished = true;
+        sender.shutdown();
+        receiver.shutdown();
         try {
             socket.close();
         } catch (IOException ignored) {}
@@ -126,7 +146,7 @@ public class ClientHandler extends Runnable {
         return token;
     }
     public synchronized boolean isConnected(){
-        return socket.isConnected() && (!clientHandlerInterrupted);
+        return socket.isConnected() && (!clientHandlerInterrupted) && (!finished);
     }
     public SharedMemory getSendBox() {
         return sendBox;
