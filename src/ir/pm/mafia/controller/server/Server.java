@@ -1,5 +1,6 @@
 package ir.pm.mafia.controller.server;
 
+import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.player.Player;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
@@ -13,7 +14,7 @@ import java.util.UUID;
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.3
+ * @version 1.4
  */
 public class Server extends Runnable{
 
@@ -25,6 +26,12 @@ public class Server extends Runnable{
      * List of connected clients
      */
     private ClientContainer clientContainer;
+    /**
+     * It this shared memory I put new connection box.
+     * Which contains a list of client handler.
+     * used to update server loop (god loop) of game!
+     */
+    private final SharedMemory connectionBox;
     /**
      * This token is generated for admin
      * Only with token you can change server setting :)
@@ -42,6 +49,11 @@ public class Server extends Runnable{
      * number of connected clients
      */
     private int numberOfConnections;
+    /**
+     * Accepting mode is true when you are in lobby!
+     * If game is started! no more connection is accepted!
+     */
+    private boolean acceptingMode;
 
     /**
      * Server Constructor
@@ -51,13 +63,14 @@ public class Server extends Runnable{
      */
     public Server(int port) throws Exception {
         try {
-            clientContainer = new ClientContainer();
             serverSocket = new ServerSocket(port);
+            connectionBox = new SharedMemory(true);
+            clientContainer = new ClientContainer(connectionBox);
             this.port = port;
         }catch (IOException e){
             Logger.error("Field while constructing server" + e.getMessage(),
                     LogLevel.ServerFailed,
-                    "Server's Constructor");
+                    "Server");
             throw new Exception("Field while constructing server");
         }finally {
             // generating token for admin
@@ -68,10 +81,22 @@ public class Server extends Runnable{
     }
 
     /**
+     * It ends the thread!
+     * so no more client accepting happens!
+     * but the server is alive!
+     */
+    public synchronized void endAccepting(){
+        acceptingMode = false;
+        clientContainer.lock();
+        this.close();
+    }
+
+    /**
      * shutdown server service
      */
     @Override
     public void shutdown(){
+        this.close();
         try {
             serverSocket.close();
         } catch (IOException e) {
@@ -80,10 +105,9 @@ public class Server extends Runnable{
         }
         clientContainer.closeAll();
         clientContainer = null;
-        this.close();
         Logger.log("Server shutdown finished!",
                 LogLevel.ShutdownCall,
-                "server.Server");
+                "Server");
     }
 
     /**
@@ -91,10 +115,10 @@ public class Server extends Runnable{
      */
     @Override
     public void run() {
-        while ((!finished)){
+        while ((!finished) && acceptingMode){
             while (numberOfConnections < maxConnectionNumber) {
                 try {
-                    waitForNewClient();;
+                    waitForNewClient();
                 } catch (Exception e) {
                     Logger.error("Joining new client failed: " + e.getMessage(),
                             LogLevel.ServerFailed,
@@ -122,15 +146,14 @@ public class Server extends Runnable{
         try {
             Socket newConnectionSocket = serverSocket.accept();
             newClient = new ClientHandler(newConnectionSocket);
-            Thread.sleep(10);
             newClient.start();
             clientContainer.add(newClient);
             updateNumberOfConnections();
-            Logger.log("New Client Connected!", LogLevel.Report, "server.Server");
+            Logger.log("New Client Connected!", LogLevel.Report, "Server");
         } catch (IOException | InterruptedException e) {
             Logger.error("Failed to join new client" + e.getMessage(),
                     LogLevel.ServerFailed,
-                    "server.Server");
+                    "Server");
             if(newClient != null)
                 newClient.shutdown();
         }
@@ -174,6 +197,9 @@ public class Server extends Runnable{
     }
     public int getPort() {
         return port;
+    }
+    public ClientContainer getClientContainer() {
+        return clientContainer;
     }
 
 }
