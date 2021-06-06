@@ -10,7 +10,7 @@ import java.util.*;
  * This class handles the clientHandlers,
  * it is kind of a list of clientHandlers :)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.0.1
  */
 public class ClientContainer {
 
@@ -64,6 +64,7 @@ public class ClientContainer {
         if(newConnection == null)
             return;
         if(!tokens.contains(newConnection.getToken())){
+            newConnection.start();
             tokens.add(newConnection.getToken());
             clientHandlers.put(newConnection.getToken(), newConnection);
             shareNewConnectionBox();
