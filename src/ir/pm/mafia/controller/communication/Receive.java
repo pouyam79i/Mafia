@@ -12,7 +12,7 @@ import java.io.ObjectInputStream;
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.3
  */
 public class Receive extends Runnable {
 
@@ -25,6 +25,10 @@ public class Receive extends Runnable {
      * This object is used to receive data over network!
      */
     private final ObjectInputStream objectInputStream;
+    /**
+     * Tells if interruption has happend!
+     */
+    private boolean interrupted;
 
     /**
      * Constructor of Receive
@@ -37,6 +41,7 @@ public class Receive extends Runnable {
             throw new Exception("Null inout");
         receiveBox = sharedMemory;
         this.objectInputStream = objectInputStream;
+        interrupted = false;
     }
 
     /**
@@ -44,17 +49,24 @@ public class Receive extends Runnable {
      */
     @Override
     public void run() {
-        try {
-            while(!finished) {
-                DataBox dataBox = (DataBox) objectInputStream.readObject();
+        interrupted = false;
+        while(!finished) {
+            try {
+                Object receivedObj = objectInputStream.readObject();
+                interrupted = false; // Check for reconnection!
+                DataBox dataBox = null;
+                try {
+                    dataBox = (DataBox) receivedObj;
+                } catch (Exception ignored) {}
                 if (dataBox != null) {
                     receiveBox.put(dataBox);
                 }
+            } catch (Exception e) {
+                Logger.error("Failed while receiving data: " + e.getMessage(),
+                        LogLevel.ThreadWarning,
+                        "communication.Receive");
+                interrupted = true;
             }
-        } catch (Exception e) {
-            Logger.error("Failed while receiving data: " + e.getMessage(),
-                    LogLevel.ThreadWarning,
-                    "communication.Receive");
         }
     }
 
@@ -66,8 +78,12 @@ public class Receive extends Runnable {
         try {
             objectInputStream.close();
         } catch (IOException ignored) {}
+        interrupted = true;
         this.close();
     }
 
-}
+    public boolean isInterrupted() {
+        return interrupted;
+    }
 
+}
