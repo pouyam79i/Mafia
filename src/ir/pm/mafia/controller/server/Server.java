@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.2
+ * @version 1.4.3
  */
 public class Server extends Runnable{
 
@@ -148,7 +148,6 @@ public class Server extends Runnable{
         try {
             Socket newConnectionSocket = serverSocket.accept();
             newClient = new ClientHandler(newConnectionSocket);
-            newClient.start();
             clientContainer.add(newClient);
             updateNumberOfConnections();
             Logger.log("New Client Connected!", LogLevel.Report, "Server");
@@ -165,10 +164,12 @@ public class Server extends Runnable{
     /**
      * Assigns a player with admin token!
      * @param player player will be admin!
-     * @return true if admin is set correctly
+     * @throws Exception if null player is given, which is going to fail be cause then we have no admin :(
      */
-    public boolean setAdmin(Player player){
-        return player.setToken(adminToken);
+    public void setAdmin(Player player) throws Exception {
+        if(player == null)
+            throw new Exception("Null input");
+        player.setToken(adminToken);
     }
     /**
      * Sets max number of connection.
