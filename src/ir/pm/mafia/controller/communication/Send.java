@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.3
  */
 public class Send extends Runnable {
 
@@ -25,6 +25,10 @@ public class Send extends Runnable {
      * This object is used to send data over network!
      */
     private final ObjectOutputStream objectOutputStream;
+    /**
+     * If the process has interrupted! it is true!
+     */
+    private boolean interrupted;
 
     /**
      * Constructor of Send
@@ -37,6 +41,7 @@ public class Send extends Runnable {
             throw new Exception("Null input");
         sendBox = sharedMemory;
         this.objectOutputStream = objectOutputStream;
+        interrupted = false;
     }
 
     /**
@@ -44,18 +49,20 @@ public class Send extends Runnable {
      */
     @Override
     public void run() {
-        DataBox dataBox = null;
+        interrupted =false;
+        Object sendObj = null;
         while (!finished){
             try {
-                dataBox = (DataBox) sendBox.get();
-                if(dataBox != null){
-                    objectOutputStream.writeObject(dataBox);
+                sendObj = sendBox.get();
+                if(sendObj != null){
+                    objectOutputStream.writeObject(sendObj);
                     objectOutputStream.flush();
                 }
             }catch (Exception e){
                 Logger.error("Failed while transferring data: " + e.getMessage(),
                         LogLevel.ThreadWarning,
                         "communication.Send");
+                interrupted = true;
             }
         }
     }
@@ -69,6 +76,11 @@ public class Send extends Runnable {
             objectOutputStream.close();
         } catch (IOException ignored) {}
         this.close();
+    }
+
+    // Getters!
+    public boolean isInterrupted() {
+        return interrupted;
     }
 
 }
