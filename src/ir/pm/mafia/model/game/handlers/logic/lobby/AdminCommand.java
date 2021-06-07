@@ -1,10 +1,10 @@
-package ir.pm.mafia.model.loops.godloop;
+package ir.pm.mafia.model.game.handlers.logic.lobby;
 
 /**
  * This enum contains admin commands!
  * only before game is started!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public enum AdminCommand {
 
@@ -14,5 +14,9 @@ public enum AdminCommand {
     LIVES,          // Returns number of current connections.
     REMOVE,         // Remove a member in lobby.
     CONFIRM,        // Confirmation to do changes.
+    TIME,           // Refers to time loops! like day time.
+    DAY,            // Refers to day property.
+    VOTE,           // Refers to vote property.
+    NIGHT,          // Refers to night property.
 
 }
