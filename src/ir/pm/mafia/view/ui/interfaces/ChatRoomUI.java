@@ -11,7 +11,7 @@ import ir.pm.mafia.view.ui.Interface;
  * This class contains the structure of chat room user interface!
  * It displays chat room new received messages!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.3
+ * @version 1.3.1
  */
 public class ChatRoomUI extends Interface{
 
@@ -56,9 +56,11 @@ public class ChatRoomUI extends Interface{
                 if(!(dataBox.getData() instanceof Message))
                     continue;
                 Message message = (Message) dataBox.getData();
-                    console.println(message.getSenderName() + ": " + message.getMessageText());
+                    console.println(PURPLE_BOLD + message.getSenderName() +
+                            RED_BOLD + ": " + BLUE + message.getMessageText());
             }catch (Exception e){
-                Logger.error("Failed to read display new message!", LogLevel.ThreadWarning, "ChatRoomUI");
+                Logger.error("Failed to read display new message!",
+                        LogLevel.ThreadWarning, "ChatRoomUI");
             }
         }
     }
@@ -100,7 +102,8 @@ public class ChatRoomUI extends Interface{
      */
     @Override
     public void run() {
-        console.println("Chat room **** " + title + " ****");
+        console.println(RED + "Chat room " + YELLOW_BOLD +
+                "**** " + BLUE_BRIGHT + title + YELLOW_BOLD + " ****");
         listeningState = false;
         runListening();
         display();
