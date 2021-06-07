@@ -2,15 +2,16 @@ package ir.pm.mafia.view.ui;
 
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
+import ir.pm.mafia.view.console.Color;
 import ir.pm.mafia.view.console.Console;
 import ir.pm.mafia.view.console.ConsoleListener;
 
 /**
  * This class contains the structure for all user interfaces.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2.1
+ * @version 1.2.2
  */
-public abstract class Interface extends Runnable {
+public abstract class Interface extends Runnable implements Color {
 
     /**
      * Contains running state,
