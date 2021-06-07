@@ -1,15 +1,14 @@
-package ir.pm.mafia.model.loops.godloop;
+package ir.pm.mafia.model.game.handlers;
 
 import ir.pm.mafia.controller.data.DataBase;
 import ir.pm.mafia.controller.data.DataBox;
-import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
 /**
  * Handles receiving data boxes from client handler in god loop (server loop).
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.2.1
  */
 public class ReceiverHandler extends Runnable {
 
@@ -22,20 +21,6 @@ public class ReceiverHandler extends Runnable {
      * Client handler contains connection
      */
     private final ClientHandler clientHandler;
-
-//    /**
-//     * Constructor of ReceiverHandler
-//     * Setups requirement to read clients!
-//     * @param inputBox input is where we share data for server loop!
-//     * @param clientHandler contains connection
-//     * @throws Exception if failed to build a safe ReceiverHandler
-//     */
-//    public ReceiverHandler(ClientHandler clientHandler, SharedMemory inputBox) throws Exception {
-//        if(inputBox == null || clientHandler == null)
-//            throw new Exception("Null input");
-//        this.inputBox = inputBox;
-//        this.clientHandler = clientHandler;
-//    }
 
     public ReceiverHandler(ClientHandler clientHandler, DataBase inputDataBase) throws Exception {
         if(inputDataBase == null || clientHandler == null)

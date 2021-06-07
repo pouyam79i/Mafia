@@ -1,4 +1,4 @@
-package ir.pm.mafia.model.loops.godloop;
+package ir.pm.mafia.model.game.handlers;
 
 import ir.pm.mafia.controller.data.Data;
 import ir.pm.mafia.controller.data.DataBase;
@@ -10,7 +10,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
  * This Class handles sending data from server to client
  * while client must read same data box!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.1.1
  */
 public class SenderHandler extends Runnable {
 
@@ -61,7 +61,7 @@ public class SenderHandler extends Runnable {
                 lastRead++;
             }
         }
-        this.close();
+        this.shutdown();
     }
 
     //Getters
