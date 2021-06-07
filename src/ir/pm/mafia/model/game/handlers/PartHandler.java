@@ -7,13 +7,12 @@ import ir.pm.mafia.model.loops.godloop.SenderHandler;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public abstract class PartHandler extends Runnable {
 
@@ -39,25 +38,19 @@ public abstract class PartHandler extends Runnable {
      * then these data will be saved in data base and part handler,
      * will analyze that.
      */
-    private ArrayList<ReceiverHandler> receiverHandlers;
+    private final ArrayList<ReceiverHandler> receiverHandlers;
     /**
      * If locked it wont refresh the client list!
      */
     protected boolean locked;
 
-
-//    public PartHandler(DataBase inputDataBase) throws Exception {
-//        if(inputDataBase == null)
-//            throw new Exception("Null input!");
-//        this.inputDataBase = inputDataBase;
-//        clientHandlers = new ArrayList<ClientHandler>();
-//        senderHandlers = new ArrayList<SenderHandler>();
-//        locked = false;
-//    }
-
+    /**
+     * Constructor of PartHandler,
+     * which handles game logic!
+     * Setups basic requirements!
+     */
     public PartHandler(){
         inputDataBase = new DataBase();
-        sharedSendingDataBase = inputDataBase;
         clientHandlers = new ArrayList<ClientHandler>();
         senderHandlers = new ArrayList<SenderHandler>();
         receiverHandlers = new ArrayList<ReceiverHandler>();
@@ -72,6 +65,8 @@ public abstract class PartHandler extends Runnable {
         if (locked)
             return;
         if(newClientHandlerList == null)
+            return;
+        if(finished)
             return;
         clientHandlers = newClientHandlerList;
         int index = 0;
@@ -94,6 +89,7 @@ public abstract class PartHandler extends Runnable {
                 } catch (Exception ignored) {}
             }
         }
+        refreshSenderList();
     }
 
     /**
@@ -107,6 +103,22 @@ public abstract class PartHandler extends Runnable {
         receiverHandlers.removeIf(receiverHandler -> !receiverHandler.isRunning());
     }
 
+    /**
+     * Shut downs the part handler!
+     */
+    @Override
+    public void shutdown(){
+        finished = true;
+        for(SenderHandler sh : senderHandlers){
+            sh.shutdown();
+        }
+        for(ReceiverHandler rh : receiverHandlers){
+            rh.shutdown();
+        }
+        this.close();
+    }
+
+    // Setters
     /**
      * Set lock is used when we dont want to update clients.
      * Used when game is started!
