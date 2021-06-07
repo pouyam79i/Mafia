@@ -8,7 +8,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
 /**
  * Handles receiving data boxes from client handler in god loop (server loop).
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1.1
+ * @version 1.1.2
  */
 public class ReceiverHandler extends Runnable {
 
@@ -29,7 +29,7 @@ public class ReceiverHandler extends Runnable {
      * @param clientHandler contains connection
      * @throws Exception if failed to build a safe ReceiverHandler
      */
-    public ReceiverHandler(SharedMemory inputBox, ClientHandler clientHandler) throws Exception {
+    public ReceiverHandler(ClientHandler clientHandler, SharedMemory inputBox) throws Exception {
         if(inputBox == null || clientHandler == null)
             throw new Exception("Null input");
         this.inputBox = inputBox;
