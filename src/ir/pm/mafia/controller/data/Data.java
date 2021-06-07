@@ -6,7 +6,7 @@ import java.io.Serializable;
  * This class contains the basic structure for all kind of data!
  * Used to transfer data between server and clients.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public abstract class Data implements Serializable {
 
@@ -18,6 +18,11 @@ public abstract class Data implements Serializable {
      * Contains sender user nickname or username
      */
     protected final String senderName;
+    /**
+     * This is used when we want to send message
+     * from server to a specific client.
+     */
+    private String receiverToken;
     /**
      * Contains type of data!
      */
@@ -40,6 +45,15 @@ public abstract class Data implements Serializable {
         this.senderToken = senderToken;
         this.senderName = senderName;
         this.dataType = dataType;
+        receiverToken = "EMPTY";
+    }
+
+    // Setters
+    public void setReceiverToke(String receiverToken){
+        if(receiverToken == null)
+            this.receiverToken = "EMPTY";
+        else
+            this.receiverToken = receiverToken;
     }
 
     // Getters
