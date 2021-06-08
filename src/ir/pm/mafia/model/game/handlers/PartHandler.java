@@ -2,8 +2,6 @@ package ir.pm.mafia.model.game.handlers;
 
 import ir.pm.mafia.controller.data.DataBase;
 import ir.pm.mafia.controller.server.ClientHandler;
-import ir.pm.mafia.model.loops.godloop.ReceiverHandler;
-import ir.pm.mafia.model.loops.godloop.SenderHandler;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
 import java.util.ArrayList;
@@ -12,16 +10,17 @@ import java.util.ArrayList;
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
 public abstract class PartHandler extends Runnable {
 
     /**
-     * Client Handler will read this data base and send data
+     * Client Handler will read this data base and send 'Data'
      */
     protected DataBase sharedSendingDataBase;
     /**
-     * Part handler will read this data base and and it will analyze them
+     * Part handler will read this data base and and it will analyze
+     * received 'DataBox'
      */
     protected final DataBase inputDataBase;
     /**
@@ -38,7 +37,11 @@ public abstract class PartHandler extends Runnable {
      * then these data will be saved in data base and part handler,
      * will analyze that.
      */
-    private final ArrayList<ReceiverHandler> receiverHandlers;
+    protected final ArrayList<ReceiverHandler> receiverHandlers;
+    /**
+     * Last read is used to read from input data base;
+     */
+    protected int lastRead;
     /**
      * If locked it wont refresh the client list!
      */
@@ -54,6 +57,7 @@ public abstract class PartHandler extends Runnable {
         clientHandlers = new ArrayList<ClientHandler>();
         senderHandlers = new ArrayList<SenderHandler>();
         receiverHandlers = new ArrayList<ReceiverHandler>();
+        lastRead = 0;
         locked = false;
     }
 
@@ -69,7 +73,6 @@ public abstract class PartHandler extends Runnable {
         if(finished)
             return;
         clientHandlers = newClientHandlerList;
-        int index = 0;
         for(ClientHandler newCH : newClientHandlerList){
             boolean exists = false;
             for(SenderHandler sh : senderHandlers){
@@ -117,6 +120,12 @@ public abstract class PartHandler extends Runnable {
         }
         this.close();
     }
+
+    /**
+     * Checks the inputs and apply new changes!
+     * Changes are accorded to the part of game!
+     */
+    protected abstract void applyLogic();
 
     // Setters
     /**
