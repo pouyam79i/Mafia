@@ -1,6 +1,7 @@
 package ir.pm.mafia.model.game.handlers;
 
 import ir.pm.mafia.controller.data.DataBase;
+import ir.pm.mafia.controller.data.boxes.GameState;
 import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.3
  */
 public abstract class PartHandler extends Runnable {
 
@@ -39,6 +40,10 @@ public abstract class PartHandler extends Runnable {
      */
     protected final ArrayList<ReceiverHandler> receiverHandlers;
     /**
+     * contains game state for clients!
+     */
+    protected GameState gameState;
+    /**
      * Last read is used to read from input data base;
      */
     protected int lastRead;
@@ -57,6 +62,7 @@ public abstract class PartHandler extends Runnable {
         clientHandlers = new ArrayList<ClientHandler>();
         senderHandlers = new ArrayList<SenderHandler>();
         receiverHandlers = new ArrayList<ReceiverHandler>();
+        gameState = null;
         lastRead = 0;
         locked = false;
     }
