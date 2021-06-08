@@ -14,7 +14,7 @@ import java.util.Locale;
  * This launcher help you to build a connection to server,
  * then runs the game
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.0.1
  */
 public class PlayerLauncher implements Launcher, Color {
 
@@ -70,7 +70,7 @@ public class PlayerLauncher implements Launcher, Color {
         // Building  game loop
         GameLoop gameLoop = null;
         try {
-            gameLoop = new GameLoop(client, player);
+            gameLoop = new GameLoop(player);
             gameLoop.start();
         } catch (Exception e) {
             Logger.error("Player launcher failed!" + e.getMessage(),
