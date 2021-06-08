@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * This Class is the server main loop so it is called GodLoop!
  * Handled states and part handler!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.0.1
  */
 public class GodLoop extends Runnable {
 
@@ -27,7 +27,7 @@ public class GodLoop extends Runnable {
      * State updater!
      * update state according to time :)
      */
-    private StateUpdater stateUpdater;
+    private final StateUpdater stateUpdater;
     /**
      * Current connection list.
      * Contains connected client handlers!
@@ -117,8 +117,8 @@ public class GodLoop extends Runnable {
         if(state == State.Lobby){
             try {
                 gameStarted = false;
-                Lobby newLobby = new Lobby(adminToken);
-                newLobby.setLock(gameStarted);
+                Lobby newLobby = new Lobby(adminToken, stateUpdater);
+                newLobby.setLock(false);
                 newLobby.start();
                 newLobby.updateClientHandlers(currentConnections);
                 currentPart = newLobby;
@@ -162,8 +162,7 @@ public class GodLoop extends Runnable {
     @Override
     public void shutdown(){
         finished = true;
-        if(stateUpdater != null)
-            stateUpdater.shutdown();
+        stateUpdater.shutdown();
         if(currentPart != null)
             currentPart.shutdown();
         this.close();
