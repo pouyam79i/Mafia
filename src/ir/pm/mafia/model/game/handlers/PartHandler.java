@@ -6,12 +6,13 @@ import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.3
+ * @version 1.4
  */
 public abstract class PartHandler extends Runnable {
 
@@ -79,13 +80,18 @@ public abstract class PartHandler extends Runnable {
         if(finished)
             return;
         clientHandlers = newClientHandlerList;
-        for(ClientHandler newCH : newClientHandlerList){
+        Iterator<ClientHandler> ch = clientHandlers.iterator();
+        while (ch.hasNext()){
+            ClientHandler newCH = ch.next();
             boolean exists = false;
             for(SenderHandler sh : senderHandlers){
                 if(sh.getClientHandler() == newCH){
                     exists = true;
                     break;
                 }
+            }
+            if(!newCH.isConnected()){
+                ch.remove();
             }
             if(!exists){
                 try {
@@ -108,8 +114,17 @@ public abstract class PartHandler extends Runnable {
     public synchronized void refreshSenderList(){
         if(locked)
             return;
-        senderHandlers.removeIf(senderHandler -> !senderHandler.isRunning());
-        receiverHandlers.removeIf(receiverHandler -> !receiverHandler.isRunning());
+        Iterator<SenderHandler> sh = senderHandlers.iterator();
+        while (sh.hasNext()){
+            if(!sh.next().getClientHandler().isConnected()){
+                sh.remove();
+            }
+        }
+        Iterator<ReceiverHandler> rh = receiverHandlers.iterator();
+        while (rh.hasNext()){
+            if(!rh.next().getClientHandler().isConnected())
+                rh.remove();
+        }
     }
 
     /**
