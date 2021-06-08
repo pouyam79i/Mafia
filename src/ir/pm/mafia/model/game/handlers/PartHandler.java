@@ -12,7 +12,7 @@ import java.util.Iterator;
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4
+ * @version 1.4.1
  */
 public abstract class PartHandler extends Runnable {
 
@@ -116,7 +116,9 @@ public abstract class PartHandler extends Runnable {
             return;
         Iterator<SenderHandler> sh = senderHandlers.iterator();
         while (sh.hasNext()){
-            if(!sh.next().getClientHandler().isConnected()){
+            SenderHandler cSH = sh.next();
+            if(!cSH.getClientHandler().isConnected()){
+                cSH.shutdown();
                 sh.remove();
             }
         }
