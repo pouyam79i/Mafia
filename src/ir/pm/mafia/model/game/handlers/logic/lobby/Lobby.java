@@ -17,7 +17,7 @@ import java.util.Locale;
  * It handles Lobby of game!
  * And also applies admin order!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.0
+ * @version v1.0.1
  */
 public class Lobby extends PartHandler {
 
@@ -51,13 +51,20 @@ public class Lobby extends PartHandler {
     @Override
     public void run() {
         lastRead = 0;
+        // Telling game loop that we are in lobby! (Lobby hand shake)
+        DataBox newDataBox = new DataBox(gameState, null);
+        sharedSendingDataBase.add(newDataBox);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {}
+
+        // running lobby logic
         while (!finished){
             applyLogic();
         }
     }
 
     // Defining logic for lobby:
-
     /**
      * Checks admin order.
      * existing commands are in AdminCommand.java
