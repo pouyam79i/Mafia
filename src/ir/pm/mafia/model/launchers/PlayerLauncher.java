@@ -1,12 +1,12 @@
 package ir.pm.mafia.model.launchers;
 
 import ir.pm.mafia.controller.client.Client;
+import ir.pm.mafia.model.loops.gameloop.GameLoop;
 import ir.pm.mafia.model.player.Player;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.view.console.Color;
 import ir.pm.mafia.view.console.Console;
-import ir.pm.mafia.view.ui.interfaces.ChatRoomUI;
 
 import java.util.Locale;
 
@@ -51,7 +51,8 @@ public class PlayerLauncher implements Launcher, Color {
             try {
                 String ip = input.split(":")[0];
                 int port = Integer.parseInt(input.split(":")[1]);
-                client = new Client(ip, port, player.getSendBox(), player.getReceiveBox(), null);
+                client = new Client(ip, port, player.getSendBox(), player.getReceiveBox(),
+                        null, player.getNickname());
                 console.println(GREEN + "Found Server");
                 console.println(YELLOW + "Running connection...");
                 client.start();
@@ -66,21 +67,24 @@ public class PlayerLauncher implements Launcher, Color {
         player.setToken(client.getMyToken());
         console.println(GREEN + "You joined server successfully!");
 
-        //  Test area *******************************************************
+        // Building  game loop
+        GameLoop gameLoop = null;
         try {
-            ChatRoomUI chatRoomUI = new ChatRoomUI(player.getSendBox(), player.getReceiveBox(),
-                    player.getToken(), player.getNickname(), BLUE + "Lobby" + RESET);
-            chatRoomUI.start();
-        } catch (Exception ignored) {}
+            gameLoop = new GameLoop(client, player);
+            gameLoop.start();
+        } catch (Exception e) {
+            Logger.error("Player launcher failed!" + e.getMessage(),
+                    LogLevel.GameInterrupted, "GameLoop");
+            console.println(RED + "Launcher failed!");
+            client.shutdown();
+            return;
+        }
 
-        // Wait 3 min
-        try {
-            Thread.sleep(180000);
-        } catch (InterruptedException ignored) {}
-        //  End of test area *******************************************************
-
+        // On holed
+        while (!gameLoop.isGameEnded()) Thread.onSpinWait();
 
         // close area
+        gameLoop.shutdown();
         client.shutdown();
 
     }
