@@ -6,7 +6,7 @@ import java.io.Serializable;
  * This class contains the basic structure for all kind of data!
  * Used to transfer data between server and clients.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2
+ * @version 1.2.1
  */
 public abstract class Data implements Serializable {
 
@@ -34,12 +34,12 @@ public abstract class Data implements Serializable {
      * @param senderToken is the sender token!
      * @param senderName is the sender nickname or username!
      */
-    protected Data(String senderToken, String senderName, DataType dataType) {
+    public Data(String senderToken, String senderName, DataType dataType) {
         // Insurance for not null fields
         if(senderToken == null)
-            senderName = "Empty Address";
+            senderToken = "EMPTY";
         if(senderName == null)
-            senderName = "Unknown";
+            senderName = "UNKNOWN";
         if(dataType == null)
             dataType = DataType.Undefined;
         this.senderToken = senderToken;
@@ -65,6 +65,9 @@ public abstract class Data implements Serializable {
     }
     public DataType getDataType() {
         return dataType;
+    }
+    public String getReceiverToken() {
+        return receiverToken;
     }
 
 }
