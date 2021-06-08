@@ -16,7 +16,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.1
+ * @version 1.5
  */
 public class ClientHandler extends Runnable {
 
@@ -28,6 +28,10 @@ public class ClientHandler extends Runnable {
      * Token is a unique Value assigned to each client
      */
     private final String token;
+    /**
+     * Contains client nick name
+     */
+    private final String nickname;
     /**
      * hands sending process
      */
@@ -73,6 +77,8 @@ public class ClientHandler extends Runnable {
                 outputStream.writeUTF("token accepted");
             }
             outputStream.flush();
+            // Hand shake reading nickname
+            nickname = inputStream.readUTF();
 
             // Memory allocation
             sendBox = new SharedMemory(true);
@@ -149,11 +155,14 @@ public class ClientHandler extends Runnable {
         clientHandlerInterrupted = receiver.isInterrupted();
         return socket.isConnected() && (!clientHandlerInterrupted) && (!finished);
     }
-    public SharedMemory getSendBox() {
+    public synchronized SharedMemory getSendBox() {
         return sendBox;
     }
-    public SharedMemory getReceiveBox() {
+    public synchronized SharedMemory getReceiveBox() {
         return receiveBox;
+    }
+    public synchronized String getNickname(){
+        return nickname;
     }
 
 }

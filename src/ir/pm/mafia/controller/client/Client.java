@@ -13,7 +13,7 @@ import java.net.Socket;
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.1
+ * @version 1.5
  */
 public class Client extends Runnable {
 
@@ -35,6 +35,10 @@ public class Client extends Runnable {
      * We set Amin token from another place!
      */
     private String myToken = null;
+    /**
+     * Contains client nick name
+     */
+    private String nickname = null;
 
     /**
      * Client constructor.
@@ -49,13 +53,13 @@ public class Client extends Runnable {
     public Client(String ip, int port,
                   SharedMemory sendBox,
                   SharedMemory receiveBox,
-                  String myToken) throws Exception {
+                  String myToken, String nickname) throws Exception {
         try {
-            if(ip == null)
+            if(ip == null || nickname == null)
                 throw new IOException("Null ip address");
             socket = new Socket(ip, port);
 
-            // Hand shake process
+            // Hand shake process for token!
             this.myToken = myToken;
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
@@ -69,6 +73,10 @@ public class Client extends Runnable {
                 outputStream.flush();
                 this.myToken = inputStream.readUTF();
             }
+            // Hand shake process for nickname!
+            this.nickname = nickname;
+            outputStream.writeUTF(nickname);
+            outputStream.flush();
 
             // Memory Allocation
             sender = new Send(sendBox, outputStream);
