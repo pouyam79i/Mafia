@@ -10,7 +10,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
  * This Class handles sending data from server to client
  * while client must read same data box!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1.1
+ * @version 1.2
  */
 public class SenderHandler extends Runnable {
 
@@ -53,9 +53,12 @@ public class SenderHandler extends Runnable {
     public void run() {
         while (clientHandler.isConnected()){
             while (lastRead < sharedSendBox.getSize()){
-                Data data = (Data) sharedSendBox.readData(lastRead);
-                if(!clientToken.equals(data.getSenderToken())){
-                    DataBox newDataBox = new DataBox(null, data);
+                DataBox newDataBox = (DataBox) sharedSendBox.readData(lastRead);
+                if(newDataBox == null)
+                    continue;
+                Data data = newDataBox.getData();
+                if((!clientToken.equals(data.getSenderToken()) && data.getReceiverToken().equals("EMPTY")) ||
+                        clientToken.equals(data.getReceiverToken())){
                     clientHandler.send(newDataBox);
                 }
                 lastRead++;
