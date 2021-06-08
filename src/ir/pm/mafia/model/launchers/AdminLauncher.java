@@ -2,13 +2,13 @@ package ir.pm.mafia.model.launchers;
 
 import ir.pm.mafia.controller.client.Client;
 import ir.pm.mafia.controller.server.Server;
+import ir.pm.mafia.model.loops.gameloop.GameLoop;
 import ir.pm.mafia.model.loops.godloop.GodLoop;
 import ir.pm.mafia.model.player.Player;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.view.console.Color;
 import ir.pm.mafia.view.console.Console;
-import ir.pm.mafia.view.ui.interfaces.ChatRoomUI;
 
 import java.util.Locale;
 
@@ -22,7 +22,7 @@ import java.util.Locale;
 public class AdminLauncher implements Launcher, Color {
 
     /**
-     * it launches a host and set you as admin player!
+     * It launches a server and set you as admin player!
      */
     @Override
     public void launch() {
@@ -59,8 +59,17 @@ public class AdminLauncher implements Launcher, Color {
                 console.println(RED + "Invalid port!");
             }
         }
+
         // setting player as server admin!
-        server.setAdmin(player);
+        try {
+            server.setAdmin(player);
+        }catch (Exception e){
+            console.println(RED + "Failed to set admin!");
+            console.println(RED + "Launcher failed!");
+            server.shutdown();
+            return;
+        }
+
         // Running server!
         server.start();
 
@@ -73,7 +82,8 @@ public class AdminLauncher implements Launcher, Color {
                         server.getPort(),
                         player.getSendBox(),
                         player.getReceiveBox(),
-                        player.getToken());
+                        player.getToken(),
+                        player.getNickname());
                 break;
             } catch (Exception e) {
                 if(i == 9){
@@ -86,7 +96,13 @@ public class AdminLauncher implements Launcher, Color {
                 }
             }
         }
+
         // Running client
+        if(client == null){
+            console.println(RED + "Null client!");
+            console.println(RED + "Launcher failed!");
+            return;
+        }
         client.start();
         console.println(GREEN + "You joined the host as admin :)");
 
@@ -96,25 +112,28 @@ public class AdminLauncher implements Launcher, Color {
             godLoop = new GodLoop(server.getConnectionBox(), player.getToken());
             godLoop.start();
         } catch (Exception e) {
+            console.println(RED + "God loop failed!");
             console.println(RED + "Launcher failed!");
             return;
         }
 
-        //  Test area *******************************************************
+        // Building  game loop
+        GameLoop gameLoop = null;
         try {
-            ChatRoomUI chatRoomUI = new ChatRoomUI(player.getSendBox(), player.getReceiveBox(),
-                    player.getToken(), player.getNickname(), BLUE + "Lobby" + RESET);
-            chatRoomUI.start();
-        } catch (Exception ignored) {}
+            gameLoop = new GameLoop(client, player);
+            gameLoop.start();
+        } catch (Exception e) {
+            Logger.error("Player launcher failed!" + e.getMessage(),
+                    LogLevel.GameInterrupted, "GameLoop");
+            console.println(RED + "Launcher failed!");
+            client.shutdown();
+            return;
+        }
 
-        // Wait 3 min
-        try {
-            Thread.sleep(180000);
-        } catch (InterruptedException ignored) {}
-        //  End of test area *******************************************************
+        // On holed
+        while (!gameLoop.isGameEnded()) Thread.onSpinWait();
 
-
-        // close area
+        // close area - shutting down all threads!
         godLoop.shutdown();
         server.shutdown();
         client.shutdown();
