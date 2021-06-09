@@ -7,6 +7,8 @@ import ir.pm.mafia.controller.data.boxes.GameState;
 import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.model.game.handlers.PartHandler;
 import ir.pm.mafia.model.game.handlers.SenderHandler;
+import ir.pm.mafia.model.game.handlers.logic.commands.AdminCommand;
+import ir.pm.mafia.model.game.handlers.logic.commands.PlayerCommand;
 import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.game.state.StateUpdater;
 import ir.pm.mafia.view.console.Color;
@@ -17,7 +19,7 @@ import java.util.Locale;
  * It handles Lobby of game!
  * And also applies admin order!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.0.1
+ * @version v1.0.2
  */
 public class Lobby extends PartHandler {
 
@@ -90,9 +92,54 @@ public class Lobby extends PartHandler {
 
         // Sending other players message normally
         if(!data.getSenderToken().equals(adminToken)){
-            newDataBox = new DataBox(gameState, data);
-            sharedSendingDataBase.add(newDataBox);
-            return;
+            // Checking if player has sent command!
+            if(((Message) data).getMessageText().startsWith("@")){
+
+                String playerCommand = ((Message) data).getMessageText().toUpperCase(Locale.ROOT);
+                playerCommand = playerCommand.substring(1); // Removing @
+                String serverRespond = null;
+
+                // Applying confirmation
+                if(playerCommand.startsWith(PlayerCommand.CONFIRM.toString())){
+                    // Add confirmation **************************************************** complete this part
+                    serverRespond = Color.GREEN + "Confirmed!";
+                }
+                // Returning players in server
+                else if(playerCommand.startsWith(PlayerCommand.LIVES.toString())){
+                    serverRespond = Color.YELLOW_BOLD + "List of player:";
+                    int index = 0;
+                    for (SenderHandler sh : senderHandlers){
+                        serverRespond += Color.RESET + "\n";
+                        serverRespond += Color.BLUE + index + Color.RED + " - " +
+                                Color.BLUE + sh.getClientHandler().getNickname();
+                        if(sh.getClientHandler().getToken().equals(adminToken))
+                            serverRespond += Color.GREEN_BOLD + " (Admin)";
+                        index++;
+                    }
+                }
+                // Used to exit the game!
+                else if(playerCommand.startsWith(PlayerCommand.CLOSE.toString())){
+                    // Remove him ***************************************************** Complete this part!
+                    serverRespond = Color.RED + data.getSenderName() + " left!";
+                    Message serverToAdmin = new Message(null, Color.BLUE_BOLD
+                            + "GOD", serverRespond);
+                    newDataBox = new DataBox(gameState, serverToAdmin);
+                    sharedSendingDataBase.add(newDataBox);
+                    return;
+                }
+                Message serverToAdmin = new Message(null, Color.BLUE_BOLD
+                        + "GOD", serverRespond);
+                serverToAdmin.setReceiverToke(data.getSenderToken());
+                newDataBox = new DataBox(gameState, serverToAdmin);
+                sharedSendingDataBase.add(newDataBox);
+                return;
+            }
+            // normal message handler!
+            else{
+                newDataBox = new DataBox(gameState, data);
+                sharedSendingDataBase.add(newDataBox);
+                return;
+            }
         }
 
         // Checking if admin has sent command!
