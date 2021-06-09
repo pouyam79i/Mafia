@@ -1,4 +1,4 @@
-package ir.pm.mafia.model.game.handlers.logic.lobby;
+package ir.pm.mafia.model.game.handlers.logic.commands;
 
 /**
  * This enum contains admin commands!
