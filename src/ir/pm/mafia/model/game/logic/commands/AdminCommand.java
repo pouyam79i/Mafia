@@ -4,7 +4,7 @@ package ir.pm.mafia.model.game.logic.commands;
  * This enum contains admin commands!
  * only before game is started!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.1.1
  */
 public enum AdminCommand {
 
@@ -18,5 +18,8 @@ public enum AdminCommand {
     DAY,            // Refers to day property.
     VOTE,           // Refers to vote property.
     NIGHT,          // Refers to night property.
+    MAX,            // Refers to the max value of a variable.
+    PLAYER,         // Refers to player
+    END,            // Ends a process, like process of confirmation
 
 }
