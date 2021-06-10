@@ -2,7 +2,7 @@ package ir.pm.mafia.model.loops.godloop;
 
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.controller.server.ClientHandler;
-import ir.pm.mafia.model.game.handlers.logic.lobby.Lobby;
+import ir.pm.mafia.model.game.logic.lobby.Lobby;
 import ir.pm.mafia.model.game.handlers.PartHandler;
 import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.game.state.StateUpdater;
@@ -123,6 +123,11 @@ public class GodLoop extends Runnable {
                 newLobby.updateClientHandlers(currentConnections);
                 currentPart = newLobby;
             } catch (Exception ignored) {}
+        }
+
+        // Calls the starter! (Will be done once)
+        else if(state == State.STARTED){
+
         }
 
         // Building a chatroom for day

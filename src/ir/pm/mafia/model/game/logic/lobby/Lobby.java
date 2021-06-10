@@ -1,18 +1,20 @@
-package ir.pm.mafia.model.game.handlers.logic.lobby;
+package ir.pm.mafia.model.game.logic.lobby;
 
 import ir.pm.mafia.controller.data.Data;
 import ir.pm.mafia.controller.data.DataBase;
 import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.boxes.GameState;
 import ir.pm.mafia.controller.data.boxes.Message;
+import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.model.game.handlers.PartHandler;
 import ir.pm.mafia.model.game.handlers.SenderHandler;
-import ir.pm.mafia.model.game.handlers.logic.commands.AdminCommand;
-import ir.pm.mafia.model.game.handlers.logic.commands.PlayerCommand;
+import ir.pm.mafia.model.game.logic.commands.AdminCommand;
+import ir.pm.mafia.model.game.logic.commands.PlayerCommand;
 import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.game.state.StateUpdater;
 import ir.pm.mafia.view.console.Color;
 
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -33,6 +35,22 @@ public class Lobby extends PartHandler {
      * using admin commands!
      */
     private final StateUpdater stateUpdater;
+    /**
+     * Max player number.
+     * Default is 10.
+     */
+    private int maxPlayer;
+    /**
+     * This is a list of confirmations.
+     * Used to make sure all players have confirmed a order,
+     * like start!
+     */
+    private HashMap<ClientHandler, Boolean> confirmations;
+    /**
+     * If admin called the start command!
+     * it means check confirmation
+     */
+    private boolean startCall;
 
     /**
      * Builds requirements for lobby.
@@ -45,6 +63,9 @@ public class Lobby extends PartHandler {
         this.stateUpdater = stateUpdater;
         this.adminToken = adminToken;
         gameState = new GameState(State.Lobby, null);
+        confirmations = new HashMap<ClientHandler, Boolean>();
+        maxPlayer = 10;
+        startCall = false;
     }
 
     /**
@@ -79,6 +100,20 @@ public class Lobby extends PartHandler {
     @Override
     protected void applyLogic() {
 
+        // Refresh confirmation list!
+        refreshConfirmationList();
+
+        // Checking confirmation list
+        if(checkConfirmation()){
+            stateUpdater.setGameStarted(true);
+            // Returning respond to all players
+            String serverRespond = Color.GREEN_BOLD + "Game started!";
+            Message serverToAll = new Message(null, Color.BLUE_BOLD + "God", serverRespond);
+            DataBox newDataBox = new DataBox(gameState, serverToAll);
+            sharedSendingDataBase.add(newDataBox);
+            return;
+        }
+
         //  Checking inputs
         if(lastRead >= inputDataBase.getSize())
             return;
@@ -101,8 +136,19 @@ public class Lobby extends PartHandler {
 
                 // Applying confirmation
                 if(playerCommand.startsWith(PlayerCommand.CONFIRM.toString())){
-                    // Add confirmation **************************************************** complete this part
-                    serverRespond = Color.GREEN + "Confirmed!";
+                    // Add confirmation
+                    if(startCall){
+                        for(ClientHandler ch : clientHandlers){
+                            if(ch.getToken().equals(data.getSenderToken())){
+                                confirmations.put(ch, true);
+                                break;
+                            }
+                        }
+                        serverRespond = Color.GREEN_BOLD + "Confirmed!";
+                    }
+                    else {
+                        serverRespond = Color.YELLOW + "No confirmation is in process!";
+                    }
                 }
                 // Returning players in server
                 else if(playerCommand.startsWith(PlayerCommand.LIVES.toString())){
@@ -119,18 +165,30 @@ public class Lobby extends PartHandler {
                 }
                 // Used to exit the game!
                 else if(playerCommand.startsWith(PlayerCommand.CLOSE.toString())){
-                    // Remove him ***************************************************** Complete this part!
+                    ClientHandler clientHandler = null;
+                    for(ClientHandler ch : clientHandlers){
+                        if(ch.getToken().equals(data.getSenderToken())){
+                            clientHandler = ch;
+                            break;
+                        }
+                    }
+                    if(clientHandler == null)
+                        return; // Just in case :)
+                    clientHandler.shutdown();
                     serverRespond = Color.RED + data.getSenderName() + " left!";
-                    Message serverToAdmin = new Message(null, Color.BLUE_BOLD
-                            + "GOD", serverRespond);
-                    newDataBox = new DataBox(gameState, serverToAdmin);
+                    Message serverToPlayer = new Message(null, Color.BLUE_BOLD
+                            + "SERVER", serverRespond);
+                    newDataBox = new DataBox(gameState, serverToPlayer);
                     sharedSendingDataBase.add(newDataBox);
                     return;
                 }
-                Message serverToAdmin = new Message(null, Color.BLUE_BOLD
-                        + "GOD", serverRespond);
-                serverToAdmin.setReceiverToke(data.getSenderToken());
-                newDataBox = new DataBox(gameState, serverToAdmin);
+                else{
+                    serverRespond = Color.RED + "Unknown command!";
+                }
+                Message serverToPlayer = new Message(null, Color.BLUE_BOLD
+                        + "SERVER", serverRespond);
+                serverToPlayer.setReceiverToke(data.getSenderToken());
+                newDataBox = new DataBox(gameState, serverToPlayer);
                 sharedSendingDataBase.add(newDataBox);
                 return;
             }
@@ -142,7 +200,7 @@ public class Lobby extends PartHandler {
             }
         }
 
-        // Checking if admin has sent command!
+        // Checking if admin has not sent command!
         if(!((Message) data).getMessageText().startsWith("@")){
             newDataBox = new DataBox(gameState, data);
             sharedSendingDataBase.add(newDataBox);
@@ -156,8 +214,30 @@ public class Lobby extends PartHandler {
 
         // Start the game
         if(adminCommand.startsWith(AdminCommand.START.toString())){
-            stateUpdater.setGameStarted(true);
-            serverRespond = Color.GREEN_BOLD + "Game started!";
+            int currentNumberOfPlayer = getCurrentNumberOfPlayer();
+            if(maxPlayer >=  currentNumberOfPlayer && currentNumberOfPlayer >= 6){
+                startCall = true;
+                for(ClientHandler ch : clientHandlers){
+                    if(ch.getToken().equals(data.getSenderToken())){
+                        confirmations.put(ch, true);
+                        break;
+                    }
+                }
+                // Alerting other players except admin
+                serverRespond = Color.YELLOW_BOLD + "Game started called!\n" +
+                        "Please confirm if you are ready";
+                Message serverToAdmin = new Message(data.getSenderToken(),
+                        Color.BLUE_BOLD + "SERVER", serverRespond);
+                newDataBox = new DataBox(gameState, serverToAdmin);
+                sharedSendingDataBase.add(newDataBox);
+                // Sending to admin a respond as well
+                serverRespond = Color.GREEN_BOLD + "Game start is called!\n"
+                        + Color.YELLOW_BOLD + "Waiting for player confirmation...";
+            }else {
+                serverRespond = Color.RED_BOLD + "Invalid number pf player!\n" +
+                        Color.YELLOW_BOLD + "Current number of player" +
+                        Color.PURPLE_BOLD + ": " + Color.RED_BOLD + currentNumberOfPlayer;
+            }
         }
 
         // End server
@@ -184,6 +264,7 @@ public class Lobby extends PartHandler {
             try {
                 String[] props = adminCommand.split(" ");
                 boolean correctSet = false;
+                // Changing game timing property
                 if(props[1].equals(AdminCommand.TIME.toString())){
                     int value = Integer.parseInt(props[3]);
                     if(props[2].equals(AdminCommand.DAY.toString()))
@@ -194,17 +275,39 @@ public class Lobby extends PartHandler {
                         correctSet = stateUpdater.setNightTimer(value);
                     else
                         serverRespond = Color.RED + "Unknown property";
-                    if(correctSet)
-                        serverRespond = Color.GREEN + "Setting changed successfully";
-                    else if(serverRespond == null)
-                        serverRespond = Color.RED + "This value is not allowed!";
-                }else {
+                }
+                // Setting max number of player
+                else if(props[1].equals(AdminCommand.MAX.toString())){
+                    int value = Integer.parseInt(props[3]);
+                    if(props[2].equals(AdminCommand.PLAYER.toString()))
+                        correctSet = setMaxPlayer(value);
+                    else
+                        serverRespond = Color.RED + "Unknown property";
+                }
+                else {
+                    serverRespond = Color.RED + "Unknown structure for " + Color.BLUE + "@" + Color.RED + "SET";
+                }
+                if(correctSet)
+                    serverRespond = Color.GREEN + "Setting changed successfully";
+                else if(serverRespond == null)
+                    serverRespond = Color.RED + "This value is not allowed!";
+                else {
                     serverRespond = Color.RED + "Unknown structure for " + Color.BLUE + "@" + Color.RED + "SET";
                 }
             }catch (Exception e){
                 serverRespond = Color.RED + "Unknown structure for " + Color.BLUE + "@" + Color.RED + "SET";
             }
         }
+
+        // Ending confirmation process.
+        else if(adminCommand.startsWith(AdminCommand.SET.toString())){
+            if(startCall){
+                startCall = false;
+                resetConfirmations();
+            }
+        }
+
+        // Rejecting unknown commands
         else {
             serverRespond = Color.RED + "Unknown command!";
         }
@@ -215,6 +318,63 @@ public class Lobby extends PartHandler {
         newDataBox = new DataBox(gameState, serverToAdmin);
         sharedSendingDataBase.add(newDataBox);
 
+    }
+
+    /**
+     * Checks if all players have confirmed
+     * @return true if all confirmed
+     */
+    private boolean checkConfirmation(){
+        if(!startCall)
+            return false;
+        refreshConfirmationList();
+        for(ClientHandler ch : clientHandlers){
+            if(!confirmations.containsKey(ch)){
+                // Just in case :)
+                return false;
+            }
+            if(!confirmations.get(ch)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Add new connection to confirmation list!
+     * but default confirmation value if false!
+     */
+    private void refreshConfirmationList(){
+        for(ClientHandler ch : clientHandlers){
+            if(!confirmations.containsKey(ch)){
+                confirmations.put(ch, false);
+            }
+        }
+    }
+
+    /**
+     * Reset the confirmation list
+     */
+    private void resetConfirmations(){
+        // Will not reset if start is called!
+        if(startCall)
+            return;
+        confirmations = new HashMap<ClientHandler, Boolean>();
+        refreshConfirmationList();
+    }
+
+    // Setters
+    public boolean setMaxPlayer(int maxPlayer) {
+        if(maxPlayer > 10 || maxPlayer < 6)
+            return false;
+        this.maxPlayer = maxPlayer;
+        return true;
+    }
+
+    // Getters
+    public int getCurrentNumberOfPlayer() {
+        refreshSenderList();
+        return senderHandlers.size();
     }
 
 }
