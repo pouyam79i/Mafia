@@ -1,4 +1,19 @@
 package ir.pm.mafia.model.game.character.characters;
 
-public class DoctorCitizen {
+import ir.pm.mafia.model.game.character.Action;
+import ir.pm.mafia.model.game.character.Character;
+import ir.pm.mafia.model.game.character.CharacterName;
+import ir.pm.mafia.model.game.character.Group;
+
+/**
+ * Citizen's Doctor
+ */
+public class DoctorCitizen extends Character{
+
+    public DoctorCitizen(){
+        characterName = CharacterName.DoctorCitizen;
+        action = Action.REVIVE;
+        group = Group.Citizen;
+    }
+
 }

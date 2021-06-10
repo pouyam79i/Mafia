@@ -1,4 +1,19 @@
 package ir.pm.mafia.model.game.character.characters;
 
-public class DoctorLecter {
+import ir.pm.mafia.model.game.character.Action;
+import ir.pm.mafia.model.game.character.CharacterName;
+import ir.pm.mafia.model.game.character.Group;
+
+/**
+ * Doctor Lecter
+ */
+public class DoctorLecter extends Mafia{
+
+    public DoctorLecter(){
+        characterName = CharacterName.DoctorLecter;
+        action = Action.REVIVE;
+        group = Group.Mafia;
+        isHeadOfMafia = false;
+    }
+
 }
