@@ -16,7 +16,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.5
+ * @version 1.5.1
  */
 public class ClientHandler extends Runnable {
 
@@ -53,6 +53,11 @@ public class ClientHandler extends Runnable {
      * if interruption happens it will be true, else remains false!
      */
     private boolean clientHandlerInterrupted;
+    /**
+     * Character of player in the game!
+     * It will be set (only once) when game has started.
+     */
+    private Character character;
 
     /**
      * Constructor of ClientHandler
@@ -93,6 +98,7 @@ public class ClientHandler extends Runnable {
             throw new Exception("Constructing new client handler failed");
         }
         clientHandlerInterrupted = false;
+        character = null;
     }
 
     /**
@@ -147,7 +153,13 @@ public class ClientHandler extends Runnable {
         this.close();
     }
 
-    //Getter
+    // Setters
+    public synchronized void setCharacter(Character character) {
+        if(this.character == null)
+            this.character = character;
+    }
+
+    // Getter
     public synchronized String getToken() {
         return token;
     }
@@ -163,6 +175,9 @@ public class ClientHandler extends Runnable {
     }
     public synchronized String getNickname(){
         return nickname;
+    }
+    public synchronized Character getCharacter() {
+        return character;
     }
 
 }
