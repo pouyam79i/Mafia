@@ -1,9 +1,13 @@
 package ir.pm.mafia.model.game.handlers;
 
 import ir.pm.mafia.controller.data.DataBase;
+import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.boxes.GameState;
+import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.controller.server.ClientHandler;
+import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
+import ir.pm.mafia.view.console.Color;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,7 +16,7 @@ import java.util.Iterator;
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.1
+ * @version 1.4.2
  */
 public abstract class PartHandler extends Runnable {
 
@@ -52,13 +56,17 @@ public abstract class PartHandler extends Runnable {
      * If locked it wont refresh the client list!
      */
     protected boolean locked;
+    /**
+     * Contains my current state
+     */
+    protected State myState;
 
     /**
      * Constructor of PartHandler,
      * which handles game logic!
      * Setups basic requirements!
      */
-    public PartHandler(){
+    protected PartHandler(){
         inputDataBase = new DataBase();
         clientHandlers = new ArrayList<ClientHandler>();
         senderHandlers = new ArrayList<SenderHandler>();
@@ -99,6 +107,15 @@ public abstract class PartHandler extends Runnable {
                     ReceiverHandler newRH = new ReceiverHandler(newCH, inputDataBase);
                     newRH.start();
                     newSH.start();
+                    if(myState == State.Lobby){
+                        // Notifying other players is any body has joined the server!
+                        Message serverRespond = new Message(newCH.getToken(),
+                                Color.BLUE_BOLD + "SERVER"
+                                , Color.GREEN + newCH.getNickname() + " Joined!");
+                        GameState gameState = new GameState(myState, null);
+                        DataBox dataBox = new DataBox(gameState, serverRespond);
+                        sharedSendingDataBase.add(dataBox);
+                    }
                     senderHandlers.add(newSH);
                     receiverHandlers.add(newRH);
                 } catch (Exception ignored) {}
@@ -114,6 +131,7 @@ public abstract class PartHandler extends Runnable {
     public synchronized void refreshSenderList(){
         if(locked)
             return;
+        // Removing useless ReceiverHandler
         Iterator<SenderHandler> sh = senderHandlers.iterator();
         while (sh.hasNext()){
             SenderHandler cSH = sh.next();
@@ -122,9 +140,12 @@ public abstract class PartHandler extends Runnable {
                 sh.remove();
             }
         }
+        // Removing useless ReceiverHandler
         Iterator<ReceiverHandler> rh = receiverHandlers.iterator();
         while (rh.hasNext()){
-            if(!rh.next().getClientHandler().isConnected())
+            ReceiverHandler cRH = rh.next();
+            if(!cRH.getClientHandler().isConnected())
+                cRH.shutdown();
                 rh.remove();
         }
     }
