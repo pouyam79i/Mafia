@@ -105,12 +105,15 @@ public class Lobby extends PartHandler {
 
         // Checking confirmation list
         if(checkConfirmation()){
-            stateUpdater.setGameStarted(true);
             // Returning respond to all players
             String serverRespond = Color.GREEN_BOLD + "Game started!";
-            Message serverToAll = new Message(null, Color.BLUE_BOLD + "God", serverRespond);
+            Message serverToAll = new Message(null, Color.BLUE_BOLD + "SERVER", serverRespond);
             DataBox newDataBox = new DataBox(gameState, serverToAll);
             sharedSendingDataBase.add(newDataBox);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {}
+            stateUpdater.setGameStarted(true);
             return;
         }
 
@@ -220,20 +223,22 @@ public class Lobby extends PartHandler {
                 for(ClientHandler ch : clientHandlers){
                     if(ch.getToken().equals(data.getSenderToken())){
                         confirmations.put(ch, true);
+                        System.out.println("Strat called");
                         break;
                     }
                 }
                 // Alerting other players except admin
                 serverRespond = Color.YELLOW_BOLD + "Game started called!\n" +
                         "Please confirm if you are ready";
-                Message serverToAdmin = new Message(data.getSenderToken(),
+                Message serverToPlayer = new Message(data.getSenderToken(),
                         Color.BLUE_BOLD + "SERVER", serverRespond);
-                newDataBox = new DataBox(gameState, serverToAdmin);
+                newDataBox = new DataBox(gameState, serverToPlayer);
                 sharedSendingDataBase.add(newDataBox);
                 // Sending to admin a respond as well
                 serverRespond = Color.GREEN_BOLD + "Game start is called!\n"
                         + Color.YELLOW_BOLD + "Waiting for player confirmation...";
-            }else {
+            }
+            else {
                 serverRespond = Color.RED_BOLD + "Invalid number pf player!\n" +
                         Color.YELLOW_BOLD + "Current number of player" +
                         Color.PURPLE_BOLD + ": " + Color.RED_BOLD + currentNumberOfPlayer;
