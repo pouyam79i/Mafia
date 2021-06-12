@@ -10,7 +10,7 @@ import ir.pm.mafia.model.game.character.Group;
 public class Godfather extends Mafia {
 
     public Godfather(){
-        characterName = CharacterName.GodFather;
+        characterName = CharacterName.God_Father;
         action = Action.SHOOT;
         group = Group.Mafia;
         isHeadOfMafia = true;

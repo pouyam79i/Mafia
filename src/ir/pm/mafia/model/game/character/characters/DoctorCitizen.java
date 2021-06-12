@@ -11,7 +11,7 @@ import ir.pm.mafia.model.game.character.Group;
 public class DoctorCitizen extends Character{
 
     public DoctorCitizen(){
-        characterName = CharacterName.DoctorCitizen;
+        characterName = CharacterName.Doctor_Citizen;
         action = Action.REVIVE;
         group = Group.Citizen;
     }

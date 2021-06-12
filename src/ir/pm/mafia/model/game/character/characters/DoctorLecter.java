@@ -10,7 +10,7 @@ import ir.pm.mafia.model.game.character.Group;
 public class DoctorLecter extends Mafia{
 
     public DoctorLecter(){
-        characterName = CharacterName.DoctorLecter;
+        characterName = CharacterName.Doctor_Lecter;
         action = Action.REVIVE;
         group = Group.Mafia;
         isHeadOfMafia = false;

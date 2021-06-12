@@ -10,7 +10,7 @@ import ir.pm.mafia.model.game.character.Group;
 public class NormalMafia extends Mafia {
 
     public NormalMafia(){
-        characterName = CharacterName.NormalMafia;
+        characterName = CharacterName.Normal_Mafia;
         action = Action.EMPTY;
         group = Group.Mafia;
         isHeadOfMafia = false;

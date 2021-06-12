@@ -11,7 +11,7 @@ import ir.pm.mafia.model.game.character.Group;
 public class NormalCitizen extends Character {
 
     public NormalCitizen(){
-        characterName = CharacterName.NormalCitizen;
+        characterName = CharacterName.Normal_Citizen;
         action = Action.EMPTY;
         group = Group.Citizen;
     }
