@@ -24,7 +24,7 @@ import java.util.Locale;
  * It handles Lobby of game!
  * And also applies admin order!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.1
+ * @version v1.1.1
  */
 public class Lobby extends PartHandler {
 
@@ -213,7 +213,9 @@ public class Lobby extends PartHandler {
             resetConfirmations();
             confirm(adminToken);
             sendToUser(Color.GREEN_BOLD + "Starting the confirmation process!", adminToken);
-            sendToAll(Color.GREEN_BOLD + "Please confirm to start the game!");
+            Message message = new Message(adminToken, Color.BLUE_BOLD + "SERVER",
+                    Color.GREEN_BOLD + "Please confirm to start the game!");
+            send(message);
             return;
         }
         // SET command, used to change setting
@@ -323,8 +325,16 @@ public class Lobby extends PartHandler {
         // Confirming a process like starting game
         if(userCommand.startsWith(PlayerCommand.CONFIRM.toString())){
             if(startCall){
-                confirm(userCommandMessage.getSenderToken());
-                sendToAll(Color.GREEN_BOLD + userCommandMessage.getSenderName() + " Confirmed!");
+                if(confirm(userToken)){
+                    Message msg = new Message(userCommandMessage.getSenderToken(),
+                            Color.BLUE_BOLD + "GOD",
+                            Color.GREEN_BOLD + userCommandMessage.getSenderName() + " Confirmed!");
+                    sendToUser(Color.GREEN_BOLD + "You confirmed", userToken);
+                    send(msg);
+                }else {
+                    sendToUser(Color.YELLOW_BOLD + "You already confirmed!",
+                            userToken);
+                }
                 return;
             }
             serverRespond = Color.YELLOW_BOLD + "No confirmation is in process!";
@@ -374,9 +384,19 @@ public class Lobby extends PartHandler {
      * @param token of player
      *
      */
-    private void confirm(String token){
-        if(startCall)
-            confirmations.put(token, true);
+    private boolean confirm(String token){
+        if(startCall){
+            if(confirmations.containsKey(token)){
+                if(!confirmations.get(token)){
+                    confirmations.put(token, true);
+                    return true;
+                }
+            }else {
+                confirmations.put(token, true);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
