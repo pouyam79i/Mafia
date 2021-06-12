@@ -13,7 +13,7 @@ import java.net.Socket;
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.5.1
+ * @version 1.5.2
  */
 public class Client extends Runnable {
 
@@ -114,7 +114,7 @@ public class Client extends Runnable {
         this.receiver.shutdown();
         try {
             socket.close();
-        } catch (IOException e) {}
+        } catch (IOException ignored) {}
         this.close();
     }
 
@@ -128,6 +128,9 @@ public class Client extends Runnable {
     // Getters
     public String getMyToken() {
         return myToken;
+    }
+    public String getNickname() {
+        return nickname;
     }
 
 }
