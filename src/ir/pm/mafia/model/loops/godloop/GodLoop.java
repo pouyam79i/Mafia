@@ -1,20 +1,31 @@
 package ir.pm.mafia.model.loops.godloop;
 
+import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.controller.data.boxes.GameState;
+import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.controller.server.ClientHandler;
+import ir.pm.mafia.controller.server.Server;
+import ir.pm.mafia.model.game.character.Character;
+import ir.pm.mafia.model.game.character.Group;
+import ir.pm.mafia.model.game.logic.GameStarter;
 import ir.pm.mafia.model.game.logic.lobby.Lobby;
 import ir.pm.mafia.model.game.handlers.PartHandler;
 import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.game.state.StateUpdater;
+import ir.pm.mafia.model.utils.logger.LogLevel;
+import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
+import ir.pm.mafia.view.console.Color;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This Class is the server main loop so it is called GodLoop!
  * Handled states and part handler!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class GodLoop extends Runnable {
 
@@ -42,7 +53,7 @@ public class GodLoop extends Runnable {
      * Game stated state!
      * if true it means game has started!
      */
-    private boolean gameStarted;
+    private volatile boolean gameStarted;
     /**
      * Token of admin will be used to confirm admin commands!
      */
@@ -51,21 +62,31 @@ public class GodLoop extends Runnable {
      * In this shared memory we pull new list of client handlers.
      */
     private final SharedMemory connectionBox;
+    /**
+     * Server of game
+     */
+    private final Server server;
+    /**
+     * character of player
+     */
+    private HashMap<ClientHandler, Character> playerCharacters;
 
     /**
      * Constructor of GodLoop
      * Setups requirements!
-     * @param connectionBox In this shared memory we pull new list of client handlers.
+     * @param server server of game
      * @param adminToken Token of admin
      * @throws Exception if failed to construct a safe GodLoop!
      */
-    public GodLoop(SharedMemory connectionBox, String adminToken) throws Exception {
-        if(connectionBox == null || adminToken == null)
+    public GodLoop(Server server, String adminToken) throws Exception {
+        if(adminToken == null || server == null)
             throw new Exception("Null input");
-        this.connectionBox = connectionBox;
+        this.server = server;
         this.adminToken = adminToken;
+        this.connectionBox = server.getConnectionBox();
         currentConnections = new ArrayList<ClientHandler>();
         stateUpdater = new StateUpdater();
+        playerCharacters = null;
         currentState = State.Initial;
         gameStarted = false;
     }
@@ -85,15 +106,6 @@ public class GodLoop extends Runnable {
         if(newConnectionList == null)
             return;
         currentConnections = newConnectionList;
-    }
-
-    /**
-     * When admin calls to start the game!
-     * It will lock every thing :)
-     */
-    public void startTheGame(){
-        updateConnections();
-        gameStarted = true;
     }
 
     /**
@@ -117,7 +129,7 @@ public class GodLoop extends Runnable {
         if(state == State.Lobby){
             try {
                 gameStarted = false;
-                Lobby newLobby = new Lobby(adminToken, stateUpdater);
+                Lobby newLobby = new Lobby(adminToken, stateUpdater, server);
                 newLobby.setLock(false);
                 newLobby.start();
                 newLobby.updateClientHandlers(currentConnections);
@@ -125,9 +137,39 @@ public class GodLoop extends Runnable {
             } catch (Exception ignored) {}
         }
 
-        // Calls the starter! (Will be done once)
+        // Calls the starter! (Will be done once) and set characters
         else if(state == State.STARTED){
+            GameStarter starter = null;
+            while (playerCharacters == null){
+                try {
+                    gameStarted = true;
+                    server.endAccepting();
+                    starter = starter = new GameStarter(currentConnections);
+                    starter.setCharacter();
+                    playerCharacters = starter.getGameCharacters();
+                } catch (Exception e) {
+                    playerCharacters = null;
+                }
+            }
 
+            GameState cgs = new GameState(State.Lobby, null);
+            Message message = null;
+            DataBox dataBox = null;
+            for(ClientHandler ch : currentConnections){
+                if(playerCharacters.get(ch).getGroup() == Group.Mafia){
+                    message = new Message(null, Color.BLUE_BOLD + "GOD",
+                            Color.RED_BOLD + playerCharacters.get(ch).toString());
+                }
+                else {
+                    message = new Message(null, Color.BLUE_BOLD + "GOD",
+                            Color.GREEN_BOLD + playerCharacters.get(ch).toString());
+                }
+                dataBox = new DataBox(cgs, message);
+                ch.send(dataBox);
+            }
+            if(starter != null) // Just in case! :)
+                starter.applyLogic();
+            stateUpdater.advance();
         }
 
         // Building a chatroom for day
@@ -155,9 +197,14 @@ public class GodLoop extends Runnable {
     public void run() {
         stateUpdater.start();
         while (!finished) {
-            updateConnections();
-            updatePartHandler(stateUpdater.getCurrentState());
-            currentPart.updateClientHandlers(currentConnections);
+            try {
+                updateConnections();
+                updatePartHandler(stateUpdater.getCurrentState());
+                currentPart.updateClientHandlers(currentConnections);
+            }catch (Exception e){
+                Logger.error("Failed to complete god loop cycle" + e.getMessage(),
+                        LogLevel.ThreadWarning, "GodLoop");
+            }
         }
     }
 
@@ -170,6 +217,7 @@ public class GodLoop extends Runnable {
         stateUpdater.shutdown();
         if(currentPart != null)
             currentPart.shutdown();
+        server.shutdown();
         this.close();
     }
 
