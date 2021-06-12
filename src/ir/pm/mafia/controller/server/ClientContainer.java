@@ -10,7 +10,7 @@ import java.util.*;
  * This class handles the clientHandlers,
  * it is kind of a list of clientHandlers :)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0.1
+ * @version 1.1
  */
 public class ClientContainer {
 
@@ -22,6 +22,11 @@ public class ClientContainer {
      * List of tokens maintains order
      */
     private final ArrayList<String> tokens;
+    /**
+     * Players nickname.
+     * It must be unique.
+     */
+    private final ArrayList<String> nicknames;
     /**
      * It this shared memory I put new connection box.
      * Which contains a list of client handler.
@@ -37,7 +42,7 @@ public class ClientContainer {
      * even if they got disconnected.
      * It will be true when the game is started!
      */
-    private boolean locked;
+    private volatile boolean locked;
 
     /**
      * Constructor of ClientContainer
@@ -51,6 +56,7 @@ public class ClientContainer {
         this.connectionBox = connectionBox;
         clientHandlers = new HashMap<String, ClientHandler>();
         tokens = new ArrayList<String>();
+        nicknames = new ArrayList<String>();
         locked = false;
     }
 
@@ -63,22 +69,23 @@ public class ClientContainer {
             return;
         if(newConnection == null)
             return;
-        if(!tokens.contains(newConnection.getToken())){
+        if(!(tokens.contains(newConnection.getToken()) || nicknames.contains(newConnection.getNickname()))){
             newConnection.start();
             tokens.add(newConnection.getToken());
+            nicknames.add(newConnection.getNickname());
             clientHandlers.put(newConnection.getToken(), newConnection);
             shareNewConnectionBox();
-        }else {
+        }
+        else {
             newConnection.shutdown();
         }
-
     }
 
     /**
      * Lock the list
      * no client handler will be removed!
      */
-    public synchronized void lock(){
+    public void lock(){
         locked = true;
         shareNewConnectionBox();
     }
@@ -102,27 +109,30 @@ public class ClientContainer {
      * update the connections state,
      * if not locked it will remove disconnected connections
      */
-    private synchronized void updateConnections(){
+    private void updateConnections(){
         if(locked){
             return;
         }
-        Iterator<String> chTk = tokens.iterator();
-        boolean updated = false;
-        while (chTk.hasNext()){
-            String token = chTk.next();
-            ClientHandler clientHandler = clientHandlers.get(token);
-            if((!clientHandler.isConnected())){
-                Logger.log("Client is disconnected so it will be removed",
-                        LogLevel.ClientDisconnected,
-                        "ClientContainer");
-                clientHandler.shutdown();
-                clientHandlers.remove(token);
-                chTk.remove();
-                updated = true;
+        try {
+            ArrayList<String> tokens = new ArrayList<String>(this.tokens);
+            Iterator<String> chTk = tokens.iterator();
+            boolean updated = false;
+            while (chTk.hasNext()){
+                String token = chTk.next();
+                ClientHandler clientHandler = clientHandlers.get(token);
+                if((!clientHandler.isConnected())){
+                    Logger.log("Client is disconnected so it will be removed",
+                            LogLevel.ClientDisconnected,
+                            "ClientContainer");
+                    clientHandler.shutdown();
+                    clientHandlers.remove(token);
+                    this.tokens.remove(tokens);
+                    updated = true;
+                }
             }
-        }
-        if(updated)
-            shareNewConnectionBox();
+            if(updated)
+                shareNewConnectionBox();
+        }catch (Exception ignored){}
     }
 
     /**
@@ -138,9 +148,13 @@ public class ClientContainer {
     }
 
     // Getters
-    public synchronized int getNumberOfConnections() {
-        updateConnections();
-        return tokens.size();
+    public int getNumberOfConnections() {
+        try {
+            updateConnections();
+            return tokens.size();
+        } catch (Exception ignored){
+         return -1;
+        }
     }
 
 }
