@@ -4,7 +4,7 @@ package ir.pm.mafia.model.game.character;
  * This class contains main structure of
  * existing characters.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.1
  */
 public abstract class Character {
 
@@ -63,13 +63,24 @@ public abstract class Character {
     /**
      * When a player is revived by a doctor.
      */
-    public void saveMyLife(){
+    public void revive(){
         if(!passedAway){
             if(!alive){
                 alive = true;
                 lives = 1;
             }
         }
+    }
+
+    @Override
+    public String toString(){
+        if(characterName == null)
+            return "No character is set!";
+        String name = characterName.toString();
+        if(name.contains("_")){
+            name = name.replace("_", " ");
+        }
+        return name;
     }
 
     // Getters
@@ -81,6 +92,12 @@ public abstract class Character {
     }
     public boolean isAlive() {
         return alive;
+    }
+    public CharacterName getCharacterName() {
+        return characterName;
+    }
+    public boolean isPassedAway() {
+        return passedAway;
     }
 
 }
