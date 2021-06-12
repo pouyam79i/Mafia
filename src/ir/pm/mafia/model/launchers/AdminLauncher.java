@@ -17,7 +17,7 @@ import java.util.Locale;
  * and sets your account as admin of host,
  * then run the game for you!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class AdminLauncher implements Launcher, Color {
 
@@ -109,7 +109,7 @@ public class AdminLauncher implements Launcher, Color {
         // Running god loop
         GodLoop godLoop;
         try {
-            godLoop = new GodLoop(server.getConnectionBox(), player.getToken());
+            godLoop = new GodLoop(server, player.getToken());
             godLoop.start();
         } catch (Exception e) {
             console.println(RED + "God loop failed!");
