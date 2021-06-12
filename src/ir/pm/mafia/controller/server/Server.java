@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.3
+ * @version 1.4.4
  */
 public class Server extends Runnable{
 
@@ -53,7 +53,7 @@ public class Server extends Runnable{
      * Accepting mode is true when you are in lobby!
      * If game is started! no more connection is accepted!
      */
-    private boolean acceptingMode;
+    private volatile boolean acceptingMode;
 
     /**
      * Server Constructor
@@ -86,10 +86,9 @@ public class Server extends Runnable{
      * so no more client accepting happens!
      * but the server is alive!
      */
-    public synchronized void endAccepting(){
+    public void endAccepting(){
         acceptingMode = false;
         clientContainer.lock();
-        this.close();
         finished = false;
     }
 
@@ -133,8 +132,10 @@ public class Server extends Runnable{
     /**
      * updates the number of connected clients
      */
-    private synchronized void updateNumberOfConnections(){
-        numberOfConnections = clientContainer.getNumberOfConnections();
+    private void updateNumberOfConnections(){
+        try {
+            numberOfConnections = clientContainer.getNumberOfConnections();
+        }catch (Exception ignored){}
     }
 
     /**
@@ -178,7 +179,7 @@ public class Server extends Runnable{
      * @return true if it could set this value!
      */
     public boolean setMaxConnectionNumber(int maxConnectionNumber) {
-        if(maxConnectionNumber > 10 || maxConnectionNumber < 5)
+        if(maxConnectionNumber > 10 || maxConnectionNumber < 6)
             return false;
         if(maxConnectionNumber < numberOfConnections)
             return false;
@@ -192,11 +193,18 @@ public class Server extends Runnable{
      * If server is off and this method is call it returns -1
      * @return current number of connections.
      */
-    public synchronized int getNumberOfConnections() {
-        if(finished)
-            return -1;
-        updateNumberOfConnections();
-        return numberOfConnections;
+    public int getNumberOfConnections() {
+        try {
+            if(finished)
+                return -1;
+            updateNumberOfConnections();
+            return numberOfConnections;
+        }catch (Exception ignored){
+            return -2;
+        }
+    }
+    public int getMaxConnectionNumber() {
+        return maxConnectionNumber;
     }
     public int getPort() {
         return port;
