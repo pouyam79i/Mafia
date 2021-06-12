@@ -5,7 +5,7 @@ import ir.pm.mafia.model.game.character.characters.*;
 /**
  * This class builds character for us! (Contains Factory Method)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.0
+ * @version v1.0.1
  */
 public class CharacterFactory {
 
@@ -35,7 +35,7 @@ public class CharacterFactory {
     public Character buildCharacter(Group group){
         Character character = null;
         // building for mafia group
-        if(group == Group.Citizen){
+        if(group == Group.Mafia){
             character = switch (mafia) {
                 case 0 -> new Godfather();
                 case 1 -> new DoctorLecter();
@@ -44,7 +44,7 @@ public class CharacterFactory {
             mafia++;
         }
         // building for citizen group
-        else if(group == Group.Mafia){
+        else if(group == Group.Citizen){
             character = switch (citizen) {
                 case 0 -> new Mayer();
                 case 1 -> new DoctorCitizen();
