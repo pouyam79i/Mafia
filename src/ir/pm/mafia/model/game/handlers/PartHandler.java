@@ -16,7 +16,7 @@ import java.util.Iterator;
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.2
+ * @version 1.4.3
  */
 public abstract class PartHandler extends Runnable {
 
@@ -68,6 +68,7 @@ public abstract class PartHandler extends Runnable {
      */
     protected PartHandler(){
         inputDataBase = new DataBase();
+        sharedSendingDataBase = new DataBase();
         clientHandlers = new ArrayList<ClientHandler>();
         senderHandlers = new ArrayList<SenderHandler>();
         receiverHandlers = new ArrayList<ReceiverHandler>();
@@ -121,14 +122,14 @@ public abstract class PartHandler extends Runnable {
                 } catch (Exception ignored) {}
             }
         }
-        refreshSenderList();
+        refreshSRHandlersList();
     }
 
     /**
-     * Refresh sender list will remove dead connections,
+     * Refresh handlers, it will remove dead connections,
      * unless part handler is locker!
      */
-    public synchronized void refreshSenderList(){
+    public synchronized void refreshSRHandlersList(){
         if(locked)
             return;
         // Removing useless ReceiverHandler
