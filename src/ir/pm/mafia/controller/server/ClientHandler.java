@@ -4,6 +4,7 @@ import ir.pm.mafia.controller.communication.Receive;
 import ir.pm.mafia.controller.communication.Send;
 import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.game.character.Character;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
@@ -16,7 +17,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.5.1
+ * @version 1.5.2
  */
 public class ClientHandler extends Runnable {
 
