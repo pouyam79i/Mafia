@@ -5,7 +5,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
 /**
  * This class sets game state according to the timer they got!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.0.1
+ * @version v1.0.2
  */
 public class StateUpdater extends Runnable {
 
@@ -16,11 +16,11 @@ public class StateUpdater extends Runnable {
     /**
      * Tells if game has started!
      */
-    private boolean gameStarted;
+    private volatile boolean gameStarted;
     /**
      * Tells if game has ended ---> show winner!
      */
-    private boolean gameFinished;
+    private volatile boolean gameFinished;
     /**
      * Day time amount
      */
@@ -33,6 +33,10 @@ public class StateUpdater extends Runnable {
      * Night time amount
      */
     private int nightTimer;
+    /**
+     * go forward!
+     */
+    private volatile boolean advance;
 
     /**
      * Constructor of StateUpdater.
@@ -45,6 +49,11 @@ public class StateUpdater extends Runnable {
         nightTimer = 120;            // 2 mints
         gameStarted = false;
         gameFinished = false;
+        advance = false;
+    }
+
+    public void advance(){
+        advance = true;
     }
 
     /**
@@ -53,12 +62,18 @@ public class StateUpdater extends Runnable {
      */
     @Override
     public void run() {
+        // waiting in lobby
         currentState = State.Lobby;
         while (!gameStarted) Thread.onSpinWait();
-        try {
-            // Waiting for other threads to prepare!
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {}
+        // calling to start
+        currentState = State.STARTED;
+        // Waiting for other threads to prepare!
+        while (!advance){
+            try {
+                Thread.sleep(1000);
+            }catch (Exception ignored){}
+        }
+        // Starting the game!
         while (!finished){
             currentState = State.Day;
             for(int i = 0; i < dayTimer; i++){
