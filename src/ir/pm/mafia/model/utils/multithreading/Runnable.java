@@ -4,7 +4,7 @@ package ir.pm.mafia.model.utils.multithreading;
  * This class contains the structure of Runnable classes!
  * It can run a class as a new thread!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2.1
+ * @version 1.2.2
  */
 public abstract class Runnable implements java.lang.Runnable{
 
@@ -49,13 +49,13 @@ public abstract class Runnable implements java.lang.Runnable{
      * Tells the thread to begin the process of killing it self!
      */
     protected synchronized void close(){
-        finished = true;
         try {
             Thread.sleep(10);
         } catch (InterruptedException ignored) {}
         if (runningState)
             thisThread.stop();
         thisThread = null;
+        finished = true;
         runningState = false;
     }
 
@@ -64,6 +64,7 @@ public abstract class Runnable implements java.lang.Runnable{
      * override this method to have safer shutdown!
      */
     public synchronized void shutdown(){
+        finished = true;
         this.close();
     }
 
