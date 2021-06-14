@@ -17,7 +17,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.6
+ * @version 1.6.1
  */
 public class ClientHandler extends Runnable {
 
@@ -213,6 +213,9 @@ public class ClientHandler extends Runnable {
     }
     public synchronized Character getCharacter() {
         return character;
+    }
+    public ClientState getClientState() {
+        return clientState;
     }
 
 }
