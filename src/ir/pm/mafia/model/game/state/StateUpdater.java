@@ -5,7 +5,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
 /**
  * This class sets game state according to the timer they got!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.0.2
+ * @version v1.0.3
  */
 public class StateUpdater extends Runnable {
 
@@ -68,35 +68,41 @@ public class StateUpdater extends Runnable {
         // calling to start
         currentState = State.STARTED;
         // Waiting for other threads to prepare!
-        while (!advance){
-            try {
-                Thread.sleep(1000);
-            }catch (Exception ignored){}
-        }
+        while (!advance) Thread.onSpinWait();
+        advance = false;
         // Starting the game!
         while (!finished){
-            currentState = State.Day;
-            for(int i = 0; i < dayTimer; i++){
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignored) {}
-            }
-            currentState = State.Vote;
-            for(int i = 0; i < voteTimer; i++){
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignored) {}
-            }
             currentState = State.Night;
             for(int i = 0; i < nightTimer; i++){
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignored) {}
             }
+            // Hold before next state
+            while (!advance) Thread.onSpinWait();
+            advance = false;
             if(gameFinished){
                 currentState = State.FINISHED;
                 this.shutdown();
                 break;              // Just in case :)
+            }
+            // Hold before next state
+            while (!advance) Thread.onSpinWait();
+            advance = false;
+            currentState = State.Day;
+            for(int i = 0; i < dayTimer; i++){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {}
+            }
+            // Hold before next state
+            while (!advance) Thread.onSpinWait();
+            advance = false;
+            currentState = State.Vote;
+            for(int i = 0; i < voteTimer; i++){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {}
             }
         }
     }
