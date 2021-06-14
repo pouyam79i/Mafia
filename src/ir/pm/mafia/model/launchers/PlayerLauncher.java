@@ -14,7 +14,7 @@ import java.util.Locale;
  * This launcher help you to build a connection to server,
  * then runs the game
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class PlayerLauncher implements Launcher, Color {
 
@@ -80,13 +80,19 @@ public class PlayerLauncher implements Launcher, Color {
             return;
         }
 
-        // On holed
-        while (!gameLoop.isGameEnded()) Thread.onSpinWait();
+        try {
+            Thread.sleep(5000);
+            // On holed
+            while (client.isConnected()) Thread.onSpinWait();
+            console.println(Color.YELLOW_BOLD + "Leaving server...");
+        }catch (Exception e){
+            console.println(Color.RED_BOLD + "Connection failed!");
+        }
 
         // close area
         gameLoop.shutdown();
         client.shutdown();
-
+        console.println(Color.YELLOW_BOLD + "Room closed!");
     }
 
 }
