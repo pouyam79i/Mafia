@@ -17,7 +17,7 @@ import ir.pm.mafia.view.ui.interfaces.ChatRoomUI;
  * This is the game loop (client loop).
  * Checks game state and updates game UI!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0
+ * @version 1.0.1
  */
 public class GameLoop extends Runnable {
 
@@ -87,6 +87,17 @@ public class GameLoop extends Runnable {
                         LogLevel.GameInterrupted, "GameLoop");
             }
         }
+    }
+
+    /**
+     * Shutdown the thread!
+     */
+    @Override
+    public void shutdown(){
+        finished = true;
+        if(currentUI != null)
+            currentUI.shutdown();
+        this.close();
     }
 
     /**
