@@ -44,7 +44,7 @@ public class StateUpdater extends Runnable {
      */
     public StateUpdater(){
         currentState =  State.Lobby;
-        dayTimer = 120;              // 2 mints
+        dayTimer = 300;              // 5 mints
         voteTimer = 60;              // 1 mints
         nightTimer = 120;            // 2 mints
         gameStarted = false;
@@ -93,6 +93,10 @@ public class StateUpdater extends Runnable {
             currentState = State.Day;
             for(int i = 0; i < dayTimer; i++){
                 try {
+                    if(advance){
+                        advance = false;
+                        break;
+                    }
                     Thread.sleep(1000);
                 } catch (InterruptedException ignored) {}
             }
