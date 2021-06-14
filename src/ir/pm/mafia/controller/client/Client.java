@@ -13,7 +13,7 @@ import java.net.Socket;
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.5.2
+ * @version 1.5.3
  */
 public class Client extends Runnable {
 
@@ -110,10 +110,10 @@ public class Client extends Runnable {
      */
     @Override
     public void shutdown(){
-        this.sender.shutdown();
-        this.receiver.shutdown();
         try {
             socket.close();
+            this.sender.shutdown();
+            this.receiver.shutdown();
         } catch (IOException ignored) {}
         this.close();
     }
@@ -121,10 +121,9 @@ public class Client extends Runnable {
     /**
      * @return connection state, if still connected returns true!
      */
-    public boolean isConnected(){
-        return (!sender.isInterrupted()) && (!finished) && (socket.isConnected());
+    public synchronized boolean isConnected(){
+        return socket.isConnected() && (!receiver.isInterrupted()) && (!finished);
     }
-
     // Getters
     public String getMyToken() {
         return myToken;
