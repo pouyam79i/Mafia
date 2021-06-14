@@ -1,6 +1,5 @@
 package ir.pm.mafia.controller.communication;
 
-import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
@@ -12,7 +11,7 @@ import java.io.ObjectOutputStream;
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.3
+ * @version 1.4
  */
 public class Send extends Runnable {
 
@@ -29,6 +28,10 @@ public class Send extends Runnable {
      * If the process has interrupted! it is true!
      */
     private boolean interrupted;
+    /**
+     * If locked, it means cannot receive data from user!
+     */
+    private volatile boolean locked;
 
     /**
      * Constructor of Send
@@ -42,6 +45,7 @@ public class Send extends Runnable {
         sendBox = sharedMemory;
         this.objectOutputStream = objectOutputStream;
         interrupted = false;
+        locked = false;
     }
 
     /**
@@ -54,7 +58,7 @@ public class Send extends Runnable {
         while (!finished){
             try {
                 sendObj = sendBox.get();
-                if(sendObj != null){
+                if(sendObj != null && (!locked)){
                     objectOutputStream.writeObject(sendObj);
                     objectOutputStream.flush();
                 }
@@ -76,6 +80,13 @@ public class Send extends Runnable {
             objectOutputStream.close();
         } catch (IOException ignored) {}
         this.close();
+    }
+
+    // Setter
+    public void setLocked(boolean locked) {
+        if(locked == this.locked)
+            return;
+        this.locked = locked;
     }
 
     // Getters!

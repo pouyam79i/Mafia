@@ -12,7 +12,7 @@ import java.io.ObjectInputStream;
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.3
+ * @version 1.4
  */
 public class Receive extends Runnable {
 
@@ -29,6 +29,10 @@ public class Receive extends Runnable {
      * Tells if interruption has happend!
      */
     private boolean interrupted;
+    /**
+     * If locked, it means cannot receive data from user!
+     */
+    private volatile boolean locked;
 
     /**
      * Constructor of Receive
@@ -42,6 +46,7 @@ public class Receive extends Runnable {
         receiveBox = sharedMemory;
         this.objectInputStream = objectInputStream;
         interrupted = false;
+        locked = false;
     }
 
     /**
@@ -59,7 +64,8 @@ public class Receive extends Runnable {
                     dataBox = (DataBox) receivedObj;
                 } catch (Exception ignored) {}
                 if (dataBox != null) {
-                    receiveBox.put(dataBox);
+                    if(!locked)
+                        receiveBox.put(dataBox);
                 }
             } catch (Exception e) {
                 Logger.error("Failed while receiving data: " + e.getMessage(),
@@ -82,6 +88,14 @@ public class Receive extends Runnable {
         this.close();
     }
 
+    // Setter
+    public void setLocked(boolean locked) {
+        if(locked == this.locked)
+            return;
+        this.locked = locked;
+    }
+
+    // Getter
     public boolean isInterrupted() {
         return interrupted;
     }
