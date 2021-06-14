@@ -43,7 +43,7 @@ public class Lobby extends PartHandler {
      * Used to make sure all players have confirmed a order,
      * like start!
      */
-    private HashMap<String, Boolean> confirmations;
+    private final HashMap<String, Boolean> confirmations;
     /**
      * If admin called the start command!
      * it means check confirmation
