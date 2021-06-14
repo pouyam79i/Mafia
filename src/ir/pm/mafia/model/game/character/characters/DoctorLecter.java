@@ -20,7 +20,7 @@ public class DoctorLecter extends Mafia{
      */
     public DoctorLecter(){
         characterName = CharacterName.Doctor_Lecter;
-        action = Action.REVIVE;
+        action = Action.REVIVE_MAFIA;
         group = Group.Mafia;
         isHeadOfMafia = false;
         selfRevive = 1;
