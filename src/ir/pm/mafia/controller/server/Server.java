@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.4
+ * @version 1.4.5
  */
 public class Server extends Runnable{
 
@@ -99,16 +99,16 @@ public class Server extends Runnable{
     public void shutdown(){
         try {
             serverSocket.close();
+            this.close();
+            clientContainer.closeAll();
+            clientContainer = null;
+            Logger.log("Server shutdown finished!",
+                    LogLevel.ShutdownCall,
+                    "Server");
         } catch (IOException e) {
             Logger.error("Failed to kill server socket" + e.getMessage(),
                     LogLevel.ServerFailed, "Server");
         }
-        this.close();
-        clientContainer.closeAll();
-        clientContainer = null;
-        Logger.log("Server shutdown finished!",
-                LogLevel.ShutdownCall,
-                "Server");
     }
 
     /**
