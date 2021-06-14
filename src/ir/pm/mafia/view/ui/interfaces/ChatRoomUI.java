@@ -3,15 +3,19 @@ package ir.pm.mafia.view.ui.interfaces;
 import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.controller.data.boxes.Message;
+import ir.pm.mafia.model.game.logic.commands.PlayerCommand;
+import ir.pm.mafia.model.utils.fio.FileUtils;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.view.ui.Interface;
+
+import java.util.Locale;
 
 /**
  * This class contains the structure of chat room user interface!
  * It displays chat room new received messages!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.3.1
+ * @version 1.4
  */
 public class ChatRoomUI extends Interface{
 
@@ -19,6 +23,14 @@ public class ChatRoomUI extends Interface{
      * Contains title message of chat room interface
      */
     private final String title;
+    /**
+     * save mode tell if you want to save received messages or not!
+     */
+    private boolean saveMode;
+    /**
+     * Used to save chat room information
+     */
+    private FileUtils fileUtils = null;
 
     /**
      * Constructor of ChatRoomUI
@@ -28,15 +40,23 @@ public class ChatRoomUI extends Interface{
      * @param myToken will be used to send data box
      * @param myName will be used to send data box
      * @param title of chat room
+     * @param saveMode save mode
      * @throws Exception if failed to build UI
      */
     public ChatRoomUI(SharedMemory sendBox,
                       SharedMemory receivedBox,
                       String myToken,
                       String myName,
-                      String title) throws Exception {
+                      String title,
+                      boolean saveMode) throws Exception {
         super(sendBox, receivedBox, myToken, myName);
         this.title = title;
+        this.saveMode = saveMode;
+        if(saveMode){
+            while (fileUtils == null)
+                fileUtils = FileUtils.getFileUtils();
+        }else
+            fileUtils = null;
         threadName = "Chatroom";
     }
 
@@ -59,6 +79,9 @@ public class ChatRoomUI extends Interface{
                 Message message = (Message) dataBox.getData();
                     console.println(PURPLE_BOLD + message.getSenderName() +
                             RED_BOLD + ": " + BLUE + message.getMessageText());
+                    if(saveMode)
+                        if(fileUtils != null)
+                            fileUtils.addToReaderBox(message);
             }catch (Exception e){
                 Logger.error("Failed to read display new message!",
                         LogLevel.ThreadWarning, "ChatRoomUI");
@@ -87,6 +110,13 @@ public class ChatRoomUI extends Interface{
             return;
         if(input.equals(""))
             return;
+        if(saveMode){
+            if(input.toUpperCase(Locale.ROOT).equals("@" + PlayerCommand.HISTORY.toString())){
+                if(fileUtils != null)
+                    fileUtils.printPreviousMessages();
+                return;
+            }
+        }
         Message message = new Message(myToken, myName, input);
         DataBox dataBox = new DataBox(null, message);
         sendBox.put(dataBox);
