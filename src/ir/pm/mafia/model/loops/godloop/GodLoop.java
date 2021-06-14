@@ -26,7 +26,7 @@ import java.util.HashMap;
  * This Class is the server main loop so it is called GodLoop!
  * Handled states and part handler!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0.3
+ * @version 1.0.4
  */
 public class GodLoop extends Runnable {
 
@@ -176,13 +176,18 @@ public class GodLoop extends Runnable {
                 starter.applyLogic();
 
             // First day of game! It has no voting
-            Day firstDay = new Day(adminToken);
-            firstDay.updateClientHandlers(currentConnections);
-            firstDay.start();
-            firstDay.setLock(true);
-            currentPart = firstDay;
+            try {
+                Day firstDay = new Day(adminToken, stateUpdater, false);
+                firstDay.updateClientHandlers(currentConnections);
+                firstDay.start();
+                firstDay.setLock(true);
+                currentPart = firstDay;
+            }catch (Exception e){
+                Logger.error("Failed to build first day chat room " + e.getMessage(),
+                        LogLevel.GameInterrupted, "GodLoop");
+            }
 
-            // Holding here for 30 sec
+            // Holding here for 30 sec!
             try {
                 Thread.sleep(30000);
             }catch (InterruptedException ignored) {}
@@ -191,7 +196,16 @@ public class GodLoop extends Runnable {
 
         // Building a chatroom for day
         else if(state == State.Day){
-
+            try {
+                Day day = new Day(adminToken, stateUpdater, true);
+                day.updateClientHandlers(currentConnections);
+                day.start();
+                day.setLock(true);
+                currentPart = day;
+            }catch (Exception e){
+                Logger.error("Failed to build first day chat room " + e.getMessage(),
+                        LogLevel.GameInterrupted, "GodLoop");
+            }
         }
 
         // Building a voter for players in a day
