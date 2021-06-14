@@ -17,14 +17,14 @@ import ir.pm.mafia.view.ui.interfaces.ChatRoomUI;
  * This is the game loop (client loop).
  * Checks game state and updates game UI!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0.2
+ * @version 1.0.3
  */
 public class GameLoop extends Runnable {
 
     /**
      * Player information
      */
-    private Player player;
+    private final Player player;
     /**
      * Current UI of game;
      */
@@ -119,7 +119,7 @@ public class GameLoop extends Runnable {
         if(state == State.Lobby){
             try {
                 currentUI = new ChatRoomUI(player.getSendBox(), sharedUIReader, player.getToken(),
-                        player.getNickname(), "Lobby");
+                        player.getNickname(), "Lobby", false);
                 currentUI.start();
             } catch (Exception e) {
                 currentUI = null;
@@ -132,7 +132,7 @@ public class GameLoop extends Runnable {
         else if(state == State.Day){
             try {
                 currentUI = new ChatRoomUI(player.getSendBox(), sharedUIReader, player.getToken(),
-                        player.getNickname(), Color.YELLOW_BOLD + "Day");
+                        player.getNickname(), Color.YELLOW_BOLD + "Day", true);
                 currentUI.start();
             } catch (Exception e) {
                 Logger.error("Failed to build day chat room" + e.getMessage(),
