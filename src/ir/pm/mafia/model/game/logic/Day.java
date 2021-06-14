@@ -21,7 +21,7 @@ import java.util.Locale;
  * It handles Day of game.
  * And also respond to normal commands of players.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.1
+ * @version v1.1.1
  */
 public class Day extends PartHandler {
 
@@ -43,19 +43,26 @@ public class Day extends PartHandler {
      * if skipped is called, it will be true
      */
     private boolean skipCalled;
+    /**
+     * Skip mode,
+     * if true it means on
+     */
+    private final boolean skipMode;
 
     /**
      * Constructor of Day
      * Setups requirements
      * @param adminToken token of admin
      * @param stateUpdater state update of game
+     * @param skipMode if true it mean skip mode is on
      * @throws Exception if null input
      */
-    public Day(String adminToken, StateUpdater stateUpdater) throws Exception {
+    public Day(String adminToken, StateUpdater stateUpdater, boolean skipMode) throws Exception {
         if(adminToken == null || stateUpdater == null)
             throw new Exception("Null input");
         this.adminToken = adminToken;
         this.stateUpdater = stateUpdater;
+        this.skipMode = skipMode;
         gameState = new GameState(State.Day, null);
         confirmations = new HashMap<String, Boolean>();
         myState = State.Day;
@@ -72,7 +79,7 @@ public class Day extends PartHandler {
     protected void applyLogic() {
 
         // If all confirmed to skip the day!
-        if(checkConfirmations()){
+        if(checkConfirmations() && skipMode){
             sendToAll(Color.GREEN_BOLD + "Skipping the day...");
             stateUpdater.advance();
             try {
@@ -157,7 +164,7 @@ public class Day extends PartHandler {
             }
         }
         // Used to confirm the skipping process
-        else if(messageText.startsWith(PlayerCommand.SKIP.toString())){
+        else if(messageText.startsWith(PlayerCommand.SKIP.toString()) && skipMode){
             if(confirm(userToken)){
                 sendToUser(Color.GREEN_BOLD + "You confirmed to skip!", userToken);
                 Message exceptMe = new Message(userToken, Color.BLUE_BOLD + "GOD",
