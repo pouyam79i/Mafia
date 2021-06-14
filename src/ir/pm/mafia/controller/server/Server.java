@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.5
+ * @version 1.4.6
  */
 public class Server extends Runnable{
 
@@ -44,11 +44,11 @@ public class Server extends Runnable{
     /**
      * this the max number of connection
      */
-    private int maxConnectionNumber;
+    private volatile int maxConnectionNumber;
     /**
      * number of connected clients
      */
-    private int numberOfConnections;
+    private volatile int numberOfConnections;
     /**
      * Accepting mode is true when you are in lobby!
      * If game is started! no more connection is accepted!
