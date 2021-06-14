@@ -1,10 +1,12 @@
 package ir.pm.mafia.model.game.character;
 
+import ir.pm.mafia.model.game.character.action.Action;
+
 /**
  * This class contains main structure of
  * existing characters.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.1.1
  */
 public abstract class Character {
 
@@ -43,11 +45,11 @@ public abstract class Character {
     /**
      * When a player has been shot by other players.
      */
-    public void gottenShoot(){
+    public void gottenShot(){
         if(!alive)
             return;
         lives--;
-        if(lives <= 0)
+        if(lives < 1)
             alive = false;
     }
 
@@ -63,13 +65,15 @@ public abstract class Character {
     /**
      * When a player is revived by a doctor.
      */
-    public void revive(){
+    public boolean revive(){
         if(!passedAway){
             if(!alive){
                 alive = true;
                 lives = 1;
+                return true;
             }
         }
+        return false;
     }
 
     @Override
