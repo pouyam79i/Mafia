@@ -17,7 +17,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.5.2
+ * @version 1.6
  */
 public class ClientHandler extends Runnable {
 
@@ -59,6 +59,10 @@ public class ClientHandler extends Runnable {
      * It will be set (only once) when game has started.
      */
     private Character character;
+    /**
+     * Contains current state of client handler!
+     */
+    private volatile ClientState clientState;
 
     /**
      * Constructor of ClientHandler
@@ -92,14 +96,15 @@ public class ClientHandler extends Runnable {
             sender = new Send(sendBox, outputStream);
             receiver = new Receive(receiveBox, inputStream);
             this.socket = socket;
+            clientHandlerInterrupted = false;
+            character = null;
+            clientState = ClientState.ALIVE;
         }catch (Exception e){
             Logger.error("Constructing new client handler failed: " + e.getMessage(),
                     LogLevel.ServerFailed,
                     "server.ClientHandler");
             throw new Exception("Constructing new client handler failed");
         }
-        clientHandlerInterrupted = false;
-        character = null;
     }
 
     /**
@@ -145,13 +150,42 @@ public class ClientHandler extends Runnable {
      */
     @Override
     public void shutdown(){
-        finished = true;
-        sender.shutdown();
-        receiver.shutdown();
         try {
+            finished = true;
             socket.close();
+            sender.shutdown();
+            receiver.shutdown();
         } catch (IOException ignored) {}
         this.close();
+    }
+
+    /**
+     * Updates current client state
+     * if disconnected, cannot be updated!
+     * @param newState of client state
+     */
+    public void updateClientState(ClientState newState){
+        if(newState == clientState)
+            return;
+        // If disconnected cannot return to the game!
+        if(clientState == ClientState.DISCONNECTED || newState == ClientState.DISCONNECTED){
+            clientState = ClientState.DISCONNECTED;
+            sender.setLocked(true);
+            receiver.setLocked(true);
+            this.shutdown();
+            return;
+        }
+        // If dead cannot end ghost mode!
+        if(clientState == ClientState.KILLED){
+            return;
+        }
+        clientState = newState;
+        if(newState == ClientState.GHOST || newState == ClientState.KILLED){
+            receiver.setLocked(true);
+        }
+        else if(newState == ClientState.ALIVE){
+            receiver.setLocked(false);
+        }
     }
 
     // Setters
