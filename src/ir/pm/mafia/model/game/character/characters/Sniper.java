@@ -1,6 +1,6 @@
 package ir.pm.mafia.model.game.character.characters;
 
-import ir.pm.mafia.model.game.character.Action;
+import ir.pm.mafia.model.game.character.action.Action;
 import ir.pm.mafia.model.game.character.Character;
 import ir.pm.mafia.model.game.character.CharacterName;
 import ir.pm.mafia.model.game.character.Group;
@@ -10,9 +10,12 @@ import ir.pm.mafia.model.game.character.Group;
  */
 public class Sniper extends Character {
 
+    /**
+     * Constructor of Sniper
+     */
     public Sniper(){
         characterName = CharacterName.Sniper;
-        action = Action.SHOOT;
+        action = Action.SHOOT_SNIPER;
         group = Group.Citizen;
     }
 

@@ -1,6 +1,6 @@
 package ir.pm.mafia.model.game.character.characters;
 
-import ir.pm.mafia.model.game.character.Action;
+import ir.pm.mafia.model.game.character.action.Action;
 import ir.pm.mafia.model.game.character.Character;
 import ir.pm.mafia.model.game.character.CharacterName;
 import ir.pm.mafia.model.game.character.Group;
@@ -10,6 +10,9 @@ import ir.pm.mafia.model.game.character.Group;
  */
 public class Mayer extends Character {
 
+    /**
+     * Constructor of Mayer
+     */
     public Mayer(){
         characterName = CharacterName.Mayer;
         action = Action.DISMISS;
