@@ -24,7 +24,7 @@ import java.util.Locale;
  * It handles Lobby of game!
  * And also applies admin order!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.1.1
+ * @version v1.1.2
  */
 public class Lobby extends PartHandler {
 
@@ -144,22 +144,12 @@ public class Lobby extends PartHandler {
     // Built in methods to help applyLogic()
 
     /**
-     * Sending a message
-     * @param message will be send
-     */
-    private void send(Message message){
-        if(message == null)
-            return;
-        DataBox dataBox = new DataBox(gameState, message);
-        sharedSendingDataBase.add(dataBox);
-    }
-
-    /**
      * Send a message to a specific user
      * @param messageText will be sent
      * @param userToken is the receiver token
      */
-    private void sendToUser(String messageText, String userToken){
+    @Override
+    protected void sendToUser(String messageText, String userToken){
         if(messageText == null || userToken == null)
             return;
         Message message = new Message(null, Color.BLUE_BOLD + "SERVER", messageText);
@@ -171,7 +161,8 @@ public class Lobby extends PartHandler {
      * Send a text from server to all players
      * @param messageText is text of message
      */
-    private void sendToAll(String messageText){
+    @Override
+    protected void sendToAll(String messageText){
         Message newMessage = new Message(null, Color.BLUE_BOLD + "SERVER",
                 messageText);
         send(newMessage);
