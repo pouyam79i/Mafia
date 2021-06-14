@@ -16,7 +16,7 @@ import java.util.Iterator;
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.3
+ * @version 1.5
  */
 public abstract class PartHandler extends Runnable {
 
@@ -152,6 +152,26 @@ public abstract class PartHandler extends Runnable {
     }
 
     /**
+     * This method runs the part handler!
+     */
+    @Override
+    public void run() {
+        lastRead = 0;
+        // Telling game loop that we are in lobby! (Lobby hand shake)
+        sharedSendingDataBase.add(new DataBox(gameState, null));
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {}
+
+        // running lobby logic
+        while (!finished){
+            try {
+                applyLogic();
+            }catch (Exception ignored){}
+        }
+    }
+
+    /**
      * Shut downs the part handler!
      */
     @Override
@@ -171,6 +191,53 @@ public abstract class PartHandler extends Runnable {
      * Changes are accorded to the part of game!
      */
     protected abstract void applyLogic();
+
+    /**
+     * Sending a message
+     * @param message will be send
+     */
+    protected void send(Message message){
+        if(message == null)
+            return;
+        sharedSendingDataBase.add(new DataBox(gameState, message));
+    }
+
+    /**
+     * Send a message to a specific user
+     * @param messageText will be sent
+     * @param userToken is the receiver token
+     */
+    protected void sendToUser(String messageText, String userToken){
+        if(messageText == null || userToken == null)
+            return;
+        Message message = new Message(null, Color.BLUE_BOLD + "SERVER", messageText);
+        message.setReceiverToke(userToken);
+        send(message);
+    }
+
+    /**
+     * Send a text from server to all players
+     * @param messageText is text of message
+     */
+    protected void sendToAll(String messageText){
+        Message newMessage = new Message(null, Color.BLUE_BOLD + "GOD",
+                messageText);
+        send(newMessage);
+    }
+
+    /**
+     * Finds a client handler by its token
+     * @param token of client handler
+     * @return ClientHandler, if not found returns null
+     */
+    protected ClientHandler getClientHandler(String token){
+        if(clientHandlers == null)
+            return null;
+        for (ClientHandler ch : clientHandlers)
+            if(ch.getToken().equals(token))
+                return ch;
+        return null;
+    }
 
     // Setters
     /**
