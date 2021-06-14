@@ -8,7 +8,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
 /**
  * Handles receiving data boxes from client handler in god loop (server loop).
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2.1
+ * @version 1.2.2
  */
 public class ReceiverHandler extends Runnable {
 
@@ -27,6 +27,8 @@ public class ReceiverHandler extends Runnable {
             throw new Exception("Null input");
         this.inputDataBase = inputDataBase;
         this.clientHandler = clientHandler;
+        threadName = "ReceiverHandler";
+        finished = false;
     }
 
     /**
@@ -37,12 +39,23 @@ public class ReceiverHandler extends Runnable {
         try {
             Thread.sleep(100);
         } catch (InterruptedException ignored) {}
-        while (clientHandler.isConnected()){
-            DataBox newDataBox = clientHandler.checkReceiver();
-            if(newDataBox != null)
-                inputDataBase.add(newDataBox.getData());
+        while (clientHandler.isConnected() && (!finished)){
+            try {
+                DataBox newDataBox = clientHandler.checkReceiver();
+                if(newDataBox != null)
+                    inputDataBase.add(newDataBox.getData());
+            }catch (Exception ignored){}
         }
         this.shutdown();
+    }
+
+    /**
+     * Shutdowns
+     */
+    @Override
+    public void shutdown(){
+        finished = true;
+        this.close();
     }
 
     // Getters

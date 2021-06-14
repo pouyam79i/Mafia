@@ -8,8 +8,9 @@ import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.controller.server.Server;
 import ir.pm.mafia.model.game.character.Character;
 import ir.pm.mafia.model.game.character.Group;
+import ir.pm.mafia.model.game.logic.Day;
 import ir.pm.mafia.model.game.logic.GameStarter;
-import ir.pm.mafia.model.game.logic.lobby.Lobby;
+import ir.pm.mafia.model.game.logic.Lobby;
 import ir.pm.mafia.model.game.handlers.PartHandler;
 import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.game.state.StateUpdater;
@@ -25,7 +26,7 @@ import java.util.HashMap;
  * This Class is the server main loop so it is called GodLoop!
  * Handled states and part handler!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0.2
+ * @version 1.0.3
  */
 public class GodLoop extends Runnable {
 
@@ -89,6 +90,7 @@ public class GodLoop extends Runnable {
         playerCharacters = null;
         currentState = State.Initial;
         gameStarted = false;
+        threadName = "GodLoop";
     }
 
     /**
@@ -119,8 +121,9 @@ public class GodLoop extends Runnable {
             return;
 
         // Shutting down current part
-        if(currentPart != null)
+        if(currentPart != null){
             currentPart.shutdown();
+        }
 
         // Setting new state
         currentState = state;
@@ -144,7 +147,7 @@ public class GodLoop extends Runnable {
                 try {
                     gameStarted = true;
                     server.endAccepting();
-                    starter = starter = new GameStarter(currentConnections);
+                    starter = new GameStarter(currentConnections);
                     starter.setCharacter();
                     playerCharacters = starter.getGameCharacters();
                 } catch (Exception e) {
@@ -158,17 +161,31 @@ public class GodLoop extends Runnable {
             for(ClientHandler ch : currentConnections){
                 if(playerCharacters.get(ch).getGroup() == Group.Mafia){
                     message = new Message(null, Color.BLUE_BOLD + "GOD",
-                            Color.RED_BOLD + playerCharacters.get(ch).toString());
+                            Color.PURPLE_BOLD + "You are " +
+                                    Color.RED_BOLD + playerCharacters.get(ch).toString());
                 }
                 else {
                     message = new Message(null, Color.BLUE_BOLD + "GOD",
-                            Color.GREEN_BOLD + playerCharacters.get(ch).toString());
+                            Color.PURPLE_BOLD + "You are " +
+                                    Color.GREEN_BOLD + playerCharacters.get(ch).toString());
                 }
                 dataBox = new DataBox(cgs, message);
                 ch.send(dataBox);
             }
             if(starter != null) // Just in case! :)
                 starter.applyLogic();
+
+            // First day of game! It has no voting
+            Day firstDay = new Day(adminToken);
+            firstDay.updateClientHandlers(currentConnections);
+            firstDay.start();
+            firstDay.setLock(true);
+            currentPart = firstDay;
+
+            // Holding here for 30 sec
+            try {
+                Thread.sleep(30000);
+            }catch (InterruptedException ignored) {}
             stateUpdater.advance();
         }
 

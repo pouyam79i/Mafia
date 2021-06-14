@@ -9,7 +9,7 @@ import ir.pm.mafia.view.console.ConsoleListener;
 /**
  * This class contains the structure for all user interfaces.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2.2
+ * @version 1.2.3
  */
 public abstract class Interface extends Runnable implements Color {
 
@@ -65,13 +65,14 @@ public abstract class Interface extends Runnable implements Color {
         if(myToken == null)
             myToken = "empty";
         console = Console.getConsole();
-        listener = ConsoleListener.getListener();
+        listener = new ConsoleListener();
         // set shared location to be able to update new messages!
         this.sendBox = sendBox;
         this.receivedBox = receivedBox;
         this.myToken = myToken;
         this.myName = myName;
         listeningState = false;
+        threadName = "Interface";
     }
 
     /**
@@ -90,6 +91,6 @@ public abstract class Interface extends Runnable implements Color {
      * and also helps to send new data if called!
      * must be override
      */
-    public abstract void runListening();
+    public abstract void Listen();
 
 }

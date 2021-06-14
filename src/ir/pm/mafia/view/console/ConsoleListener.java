@@ -3,20 +3,21 @@ package ir.pm.mafia.view.console;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /**
  * Console listener is used to read inputs from console,
  * but in multithreading mode!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.1.1
  */
 public class ConsoleListener extends Runnable {
 
-    /**
-     * building console listener in singleton mode
-     */
-    private static ConsoleListener instanceOfListener = null;
+//    /**
+//     * building console listener in singleton mode
+//     */
+//    private static ConsoleListener instanceOfListener = null;
 
     /**
      * Using console to read inputs
@@ -31,9 +32,10 @@ public class ConsoleListener extends Runnable {
      * Constructor of ConsoleListener
      * Setups requirements
      */
-    private ConsoleListener(){
+    public ConsoleListener(){
         inputBox = new SharedMemory(true);
-        scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in, StandardCharsets.UTF_8);
+        threadName = "ConsoleListener";
     }
 
     /**
@@ -60,14 +62,14 @@ public class ConsoleListener extends Runnable {
         return inputBox;
     }
 
-    /**
-     * Builds (or just returns) a listener!
-     * @return Console listener
-     */
-    public static ConsoleListener getListener() {
-        if(instanceOfListener == null)
-            instanceOfListener = new ConsoleListener();
-        return instanceOfListener;
-    }
+//    /**
+//     * Builds (or just returns) a listener!
+//     * @return Console listener
+//     */
+//    public static ConsoleListener getListener() {
+//        if(instanceOfListener == null)
+//            instanceOfListener = new ConsoleListener();
+//        return instanceOfListener;
+//    }
 
 }

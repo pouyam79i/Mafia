@@ -16,17 +16,24 @@ import java.util.Locale;
  * It handles Day of game.
  * And also respond to normal commands of players.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.0
+ * @version v1.0.1
  */
 public class Day extends PartHandler {
+
+    /**
+     * Token of admin!
+     */
+    private String adminToken;
 
     /**
      * Constructor of Day
      * Setups requirements
      */
-    public Day() {
+    public Day(String adminToken) {
         gameState = new GameState(State.Day, null);
         myState = State.Day;
+        this.adminToken = adminToken;
+        threadName = "Day";
     }
 
     /**
@@ -48,8 +55,9 @@ public class Day extends PartHandler {
         // Checking commands
         if(message.getMessageText().startsWith("@"))
             checkPlayerCommand(message);
-        else
+        else{
             send(message);
+        }
     }
 
     /**
@@ -101,6 +109,9 @@ public class Day extends PartHandler {
                 }
             }
             if(clientHandler != null){
+                if(clientHandler.getToken().equals(adminToken)){
+                    sendToUser(Color.RED_BOLD + "You are admin! cannot leave!", adminToken);
+                }
                 clientHandler.shutdown();
                 clientHandler.updateClientState(ClientState.DISCONNECTED);
                 refreshSRHandlersList();

@@ -37,6 +37,7 @@ public class ChatRoomUI extends Interface{
                       String title) throws Exception {
         super(sendBox, receivedBox, myToken, myName);
         this.title = title;
+        threadName = "Chatroom";
     }
 
     /**
@@ -72,19 +73,15 @@ public class ChatRoomUI extends Interface{
     @Override
     public synchronized void update(String... args) {
         display();
-        runListening();
+        Listen();
     }
 
     /**
      * This one runs the listener
      */
     @Override
-    public void runListening() {
+    public void Listen() {
 
-        if(!listeningState){
-            listener.start();
-            listeningState = true;
-        }
         String input = (String) listener.getInputBox().get();
         if(input == null)
             return;
@@ -102,10 +99,13 @@ public class ChatRoomUI extends Interface{
      */
     @Override
     public void run() {
+        if(!listeningState){
+            listener.start();
+            listeningState = true;
+        }
         console.println(RED + "Chat room " + YELLOW_BOLD +
                 "**** " + BLUE_BRIGHT + title + YELLOW_BOLD + " ****");
         listeningState = false;
-        runListening();
         display();
         while (!finished)
             update();

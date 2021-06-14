@@ -13,7 +13,7 @@ import java.net.Socket;
 /**
  * This class builds a connection from client to server
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.5.3
+ * @version 1.5.4
  */
 public class Client extends Runnable {
 
@@ -81,6 +81,7 @@ public class Client extends Runnable {
             // Memory Allocation
             sender = new Send(sendBox, outputStream);
             receiver = new Receive(receiveBox, inputStream);
+            threadName = "Client";
         }catch (Exception e){
             Logger.error("Client constructor failed!: " + e.getMessage(),
                     LogLevel.ClientFailed, "client.Client");

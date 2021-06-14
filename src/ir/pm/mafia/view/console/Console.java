@@ -1,5 +1,7 @@
 package ir.pm.mafia.view.console;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /**
@@ -7,7 +9,7 @@ import java.util.Scanner;
  * plus it uses singleton pattern and also must be used in a synchronized way.
  * Console is used to make a good way to interact with user.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.1.1
  */
 public class Console implements Color{
 
@@ -26,7 +28,8 @@ public class Console implements Color{
      */
     private Console(){
         // Getting a scanner
-        scanner = new Scanner(System.in);
+        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     }
 
     /**

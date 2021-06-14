@@ -12,7 +12,7 @@ import java.io.ObjectInputStream;
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4
+ * @version 1.4.1
  */
 public class Receive extends Runnable {
 
@@ -47,6 +47,7 @@ public class Receive extends Runnable {
         this.objectInputStream = objectInputStream;
         interrupted = false;
         locked = false;
+        threadName = "Receive";
     }
 
     /**
@@ -55,7 +56,7 @@ public class Receive extends Runnable {
     @Override
     public void run() {
         interrupted = false;
-        while(!finished) {
+        while ((!finished) && (!interrupted)){
             try {
                 Object receivedObj = objectInputStream.readObject();
                 interrupted = false; // Check for reconnection!
@@ -74,6 +75,7 @@ public class Receive extends Runnable {
                 interrupted = true;
             }
         }
+        this.shutdown();
     }
 
     /**

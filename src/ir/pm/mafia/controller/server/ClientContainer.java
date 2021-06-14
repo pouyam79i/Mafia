@@ -3,6 +3,7 @@ package ir.pm.mafia.controller.server;
 import ir.pm.mafia.controller.data.SharedMemory;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
+import ir.pm.mafia.model.utils.multithreading.Runnable;
 
 import java.util.*;
 
@@ -10,9 +11,9 @@ import java.util.*;
  * This class handles the clientHandlers,
  * it is kind of a list of clientHandlers :)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1
+ * @version 1.2
  */
-public class ClientContainer {
+public class ClientContainer extends Runnable {
 
     /**
      * Contains the connections, mapped with tokens
@@ -58,15 +59,19 @@ public class ClientContainer {
         tokens = new ArrayList<String>();
         nicknames = new ArrayList<String>();
         locked = false;
+        threadName = "ClientContainer";
     }
 
     /**
      * Adds a new client handler to the list of client
      * @param newConnection will be added
      */
-    public synchronized void add(ClientHandler newConnection){
-        if(locked)
+    public void add(ClientHandler newConnection){
+        if(locked){
+            if(newConnection != null)
+                newConnection.shutdown();
             return;
+        }
         if(newConnection == null)
             return;
         if(!(tokens.contains(newConnection.getToken()) || nicknames.contains(newConnection.getNickname()))){
@@ -93,7 +98,7 @@ public class ClientContainer {
     /**
      * Closes all connections
      */
-    public synchronized void closeAll(){
+    public void closeAll(){
         Iterator<String> chTk = tokens.iterator();
         while (chTk.hasNext()){
             String token = chTk.next();
@@ -125,8 +130,9 @@ public class ClientContainer {
                             LogLevel.ClientDisconnected,
                             "ClientContainer");
                     clientHandler.shutdown();
+                    nicknames.remove(clientHandler.getNickname());
                     clientHandlers.remove(token);
-                    this.tokens.remove(tokens);
+                    this.tokens.remove(token);
                     updated = true;
                 }
             }
@@ -147,6 +153,13 @@ public class ClientContainer {
         connectionBox.put(newConnections);
     }
 
+    @Override
+    public void run() {
+        while ((!locked) && (!finished))
+            updateConnections();
+        this.shutdown();
+    }
+
     // Getters
     public int getNumberOfConnections() {
         try {
@@ -156,5 +169,6 @@ public class ClientContainer {
          return -1;
         }
     }
+
 
 }

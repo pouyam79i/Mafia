@@ -10,7 +10,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
  * This Class handles sending data from server to client
  * while client must read same data box!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.2.2
+ * @version 1.2.3
  */
 public class SenderHandler extends Runnable {
 
@@ -44,6 +44,7 @@ public class SenderHandler extends Runnable {
         this.sharedSendBox = sharedSendBox;
         clientToken = clientHandler.getToken();
         lastRead = 0;
+        threadName = "SenderHandler";
     }
 
     /**
@@ -51,19 +52,24 @@ public class SenderHandler extends Runnable {
      */
     @Override
     public void run() {
-        while (clientHandler.isConnected()){
+        while (clientHandler.isConnected() && (!finished)){
             while (lastRead < sharedSendBox.getSize()){
-                DataBox newDataBox = (DataBox) sharedSendBox.readData(lastRead);
-                lastRead++;
-                if(newDataBox == null)
-                    continue;
-                Data data = newDataBox.getData();
-                if(data == null && newDataBox.getGameState() != null){
-                    clientHandler.send(newDataBox);
-                }
-                else if((!clientToken.equals(data.getSenderToken()) && data.getReceiverToken().equals("EMPTY")) ||
-                        clientToken.equals(data.getReceiverToken())){
-                    clientHandler.send(newDataBox);
+                try {
+                    DataBox newDataBox = (DataBox) sharedSendBox.readData(lastRead);
+                    lastRead++;
+                    if(newDataBox == null)
+                        continue;
+                    Data data = newDataBox.getData();
+                    if(data == null && newDataBox.getGameState() != null){
+                        clientHandler.send(newDataBox);
+                    }
+                    if(data == null)
+                        continue;
+                    if((!clientToken.equals(data.getSenderToken()) && data.getReceiverToken().equals("EMPTY")) ||
+                            clientToken.equals(data.getReceiverToken())){
+                        clientHandler.send(newDataBox);
+                    }
+                }catch (Exception ignored){
                 }
             }
         }

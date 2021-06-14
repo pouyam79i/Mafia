@@ -1,4 +1,4 @@
-package ir.pm.mafia.model.game.logic.lobby;
+package ir.pm.mafia.model.game.logic;
 
 import ir.pm.mafia.controller.data.Data;
 import ir.pm.mafia.controller.data.DataBox;
@@ -24,7 +24,7 @@ import java.util.Locale;
  * It handles Lobby of game!
  * And also applies admin order!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.1.2
+ * @version v1.1.3
  */
 public class Lobby extends PartHandler {
 
@@ -70,6 +70,7 @@ public class Lobby extends PartHandler {
         confirmations = new HashMap<String, Boolean>();
         startCall = false;
         myState = State.Lobby;
+        threadName = "Lobby";
     }
 
     /**
@@ -232,18 +233,18 @@ public class Lobby extends PartHandler {
                         serverRespond = Color.RED_BOLD + "Unknown property for SET TIME";
                     }
                 }
-                // Changing max player value
-                else if(props[1].equals(AdminCommand.MAX.toString())){
-                    if(props[2].equals(AdminCommand.PLAYER.toString())){
-                        if(setMaxPlayer(value)){
-                            serverRespond = Color.GREEN_BOLD + "Max player is set to " +
-                                    Color.YELLOW_BOLD + value;
-                        }
-                    }
-                    else {
-                        serverRespond = Color.RED_BOLD + "Unknown property for SET MAX";
-                    }
-                }
+                // Changing max player value  ********* This feature will be added in new updates ********
+//                else if(props[1].equals(AdminCommand.MAX.toString())){
+//                    if(props[2].equals(AdminCommand.PLAYER.toString())){
+//                        if(setMaxPlayer(value)){
+//                            serverRespond = Color.GREEN_BOLD + "Max player is set to " +
+//                                    Color.YELLOW_BOLD + value;
+//                        }
+//                    }
+//                    else {
+//                        serverRespond = Color.RED_BOLD + "Unknown property for SET MAX";
+//                    }
+//                }
                 else {
                     serverRespond = Color.RED_BOLD + "Wrong SET structure!";
                 }
@@ -255,7 +256,7 @@ public class Lobby extends PartHandler {
         }
         // CLOSE command, ends lobby and server
         else if(adminMessageText.startsWith(AdminCommand.CLOSE.toString())){
-            sendToUser(Color.YELLOW_BOLD + "No confirmation is in process!", adminToken);
+            sendToUser(Color.YELLOW_BOLD + "This feature will be added!", adminToken);
             return;
         }
         // LIVES command, returns current list of player

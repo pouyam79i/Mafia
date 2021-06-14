@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Server of game builds connection to clients and handles them.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4.6
+ * @version 1.4.7
  */
 public class Server extends Runnable{
 
@@ -78,6 +78,7 @@ public class Server extends Runnable{
             acceptingMode = true;
             maxConnectionNumber = 10;
             numberOfConnections = 0;
+            threadName = "Server";
         }
     }
 
@@ -116,6 +117,7 @@ public class Server extends Runnable{
      */
     @Override
     public void run() {
+        clientContainer.start();
         while ((!finished) && acceptingMode){
             while (numberOfConnections < maxConnectionNumber) {
                 try {
@@ -142,7 +144,7 @@ public class Server extends Runnable{
      * This method waits for a client to join server
      * @throws Exception if server is off and you try to call this method or because of null input!
      */
-    private synchronized void waitForNewClient() throws Exception{
+    private void waitForNewClient() throws Exception{
         if(finished)
             throw new Exception("Server is shutdown");
         ClientHandler newClient = null;

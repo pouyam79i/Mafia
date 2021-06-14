@@ -17,7 +17,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.6.1
+ * @version 1.6.2
  */
 public class ClientHandler extends Runnable {
 
@@ -99,6 +99,7 @@ public class ClientHandler extends Runnable {
             clientHandlerInterrupted = false;
             character = null;
             clientState = ClientState.ALIVE;
+            threadName = "ClientHandler";
         }catch (Exception e){
             Logger.error("Constructing new client handler failed: " + e.getMessage(),
                     LogLevel.ServerFailed,
@@ -111,7 +112,7 @@ public class ClientHandler extends Runnable {
      * This method puts a data box in send box
      * @param dataBox will be send
      */
-    public synchronized void send(DataBox dataBox){
+    public void send(DataBox dataBox){
         if(!finished)
             sendBox.put(dataBox);
     }
@@ -121,7 +122,7 @@ public class ClientHandler extends Runnable {
      * if we have new data returns it, else returns null!
      * @return DataBox
      */
-    public synchronized DataBox checkReceiver(){
+    public DataBox checkReceiver(){
         if(!finished)
             return ((DataBox) receiveBox.get());
         return null;
@@ -143,6 +144,7 @@ public class ClientHandler extends Runnable {
                     "server.ClientHandler");
             clientHandlerInterrupted = true;
         }
+        this.shutdown();
     }
 
     /**

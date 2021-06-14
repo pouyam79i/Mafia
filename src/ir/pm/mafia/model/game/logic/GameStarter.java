@@ -18,7 +18,7 @@ import java.util.HashMap;
 /**
  * Game handler the introduction night!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.0
+ * @version v1.1
  */
 public class GameStarter{
 
@@ -106,25 +106,27 @@ public class GameStarter{
     public void applyLogic() {
         GameState cgs = new GameState(State.Lobby, null);
         Message message = null;
-        String messageText = null;
+        StringBuilder messageText = null;
         for(ClientHandler CH : clientHandlers){
             message = null;
             messageText = null;
             if(mafiaTeam.contains(CH)){
                 int index = 0;
-                messageText = Color.YELLOW_BOLD + "Your " + Color.RED_BOLD + "Mafia " +
-                        Color.YELLOW_BOLD + "Teammates:\n";
+                messageText = new StringBuilder(Color.YELLOW_BOLD + "Your " + Color.RED_BOLD + "Mafia " +
+                        Color.YELLOW_BOLD + "Teammates:\n");
                 for(ClientHandler otherMafias : mafiaTeam){
                     if(otherMafias == CH)
                         continue;
-                    messageText += Color.YELLOW_BOLD + index + " - " + otherMafias.getNickname() + " is " +
-                            Color.RED_BOLD + playerCharacters.get(otherMafias).toString() + "\n";
+                    messageText.append(Color.YELLOW_BOLD).append(index).append(" - ")
+                            .append(otherMafias.getNickname()).append(" is ")
+                            .append(Color.RED_BOLD).append(playerCharacters.get(otherMafias).toString())
+                            .append("\n");
                     index++;
                 }
                 if(index == 0)
                     continue;
                 message = new Message(null, Color.BLUE_BOLD + "GOD",
-                        messageText);
+                        messageText.toString());
                 CH.send(new DataBox(cgs, message));
             }else if(citizenTeam.contains(CH)){
                 if(playerCharacters.get(CH).getCharacterName() == CharacterName.Mayer){
@@ -132,7 +134,8 @@ public class GameStarter{
                     for(ClientHandler CD : citizenTeam){
                         if(CD.getCharacter().getCharacterName() == CharacterName.Doctor_Citizen){
                             message = new Message(null, Color.BLUE_BOLD + "GOD",
-                                    Color.GREEN_BOLD + CD.getNickname() + " is Citizen Doctor!");
+                                    Color.PURPLE_BOLD + CD.getNickname() +
+                                            Color.GREEN_BOLD + " is Citizen Doctor!");
                             CH.send(new DataBox(cgs, message));
                             break;
                         }
@@ -143,7 +146,8 @@ public class GameStarter{
                     for(ClientHandler MR : citizenTeam){
                         if(MR.getCharacter().getCharacterName() == CharacterName.Mayer){
                             message = new Message(null, Color.BLUE_BOLD + "GOD",
-                                    Color.GREEN_BOLD + MR.getNickname() + " is Mayer!");
+                                    Color.PURPLE_BOLD + MR.getNickname() +
+                                            Color.GREEN_BOLD + " is Mayer!");
                             CH.send(new DataBox(cgs, message));
                             break;
                         }

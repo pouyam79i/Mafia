@@ -6,6 +6,8 @@ import ir.pm.mafia.controller.data.boxes.GameState;
 import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.model.game.state.State;
+import ir.pm.mafia.model.utils.logger.LogLevel;
+import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 import ir.pm.mafia.view.console.Color;
 
@@ -16,7 +18,7 @@ import java.util.Iterator;
  * This is the structure for all handles!
  * These classes are used in god loop (server loop)
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.5
+ * @version 1.6
  */
 public abstract class PartHandler extends Runnable {
 
@@ -28,7 +30,7 @@ public abstract class PartHandler extends Runnable {
      * Part handler will read this data base and and it will analyze
      * received 'DataBox'
      */
-    protected final DataBase inputDataBase;
+    protected DataBase inputDataBase;
     /**
      * List of client handlers in this part
      */
@@ -43,7 +45,7 @@ public abstract class PartHandler extends Runnable {
      * then these data will be saved in data base and part handler,
      * will analyze that.
      */
-    protected final ArrayList<ReceiverHandler> receiverHandlers;
+    protected ArrayList<ReceiverHandler> receiverHandlers;
     /**
      * contains game state for clients!
      */
@@ -72,9 +74,12 @@ public abstract class PartHandler extends Runnable {
         clientHandlers = new ArrayList<ClientHandler>();
         senderHandlers = new ArrayList<SenderHandler>();
         receiverHandlers = new ArrayList<ReceiverHandler>();
+        myState = State.Initial;
         gameState = null;
         lastRead = 0;
         locked = false;
+        finished = false;
+        threadName = "PartHandler";
     }
 
     /**
@@ -92,6 +97,10 @@ public abstract class PartHandler extends Runnable {
         Iterator<ClientHandler> ch = clientHandlers.iterator();
         while (ch.hasNext()){
             ClientHandler newCH = ch.next();
+            if(!newCH.isConnected()){
+                ch.remove();
+                continue;
+            }
             boolean exists = false;
             for(SenderHandler sh : senderHandlers){
                 if(sh.getClientHandler() == newCH){
@@ -99,15 +108,14 @@ public abstract class PartHandler extends Runnable {
                     break;
                 }
             }
-            if(!newCH.isConnected()){
-                ch.remove();
-            }
             if(!exists){
                 try {
                     SenderHandler newSH = new SenderHandler(newCH, sharedSendingDataBase);
                     ReceiverHandler newRH = new ReceiverHandler(newCH, inputDataBase);
                     newRH.start();
                     newSH.start();
+                    senderHandlers.add(newSH);
+                    receiverHandlers.add(newRH);
                     if(myState == State.Lobby){
                         // Notifying other players is any body has joined the server!
                         Message serverRespond = new Message(newCH.getToken(),
@@ -117,9 +125,11 @@ public abstract class PartHandler extends Runnable {
                         DataBox dataBox = new DataBox(gameState, serverRespond);
                         sharedSendingDataBase.add(dataBox);
                     }
-                    senderHandlers.add(newSH);
-                    receiverHandlers.add(newRH);
-                } catch (Exception ignored) {}
+                } catch (Exception e) {
+                    newCH.shutdown();
+                    Logger.error("Failed to hock the connection to ClientHandler" + e.getMessage(),
+                            LogLevel.ClientDisconnected, "PartHandler");
+                }
             }
         }
         refreshSRHandlersList();
@@ -145,9 +155,10 @@ public abstract class PartHandler extends Runnable {
         Iterator<ReceiverHandler> rh = receiverHandlers.iterator();
         while (rh.hasNext()){
             ReceiverHandler cRH = rh.next();
-            if(!cRH.getClientHandler().isConnected())
+            if(!cRH.getClientHandler().isConnected()){
                 cRH.shutdown();
                 rh.remove();
+            }
         }
     }
 
@@ -177,11 +188,11 @@ public abstract class PartHandler extends Runnable {
     @Override
     public void shutdown(){
         finished = true;
-        for(SenderHandler sh : senderHandlers){
-            sh.shutdown();
-        }
         for(ReceiverHandler rh : receiverHandlers){
             rh.shutdown();
+        }
+        for(SenderHandler sh : senderHandlers){
+            sh.shutdown();
         }
         this.close();
     }

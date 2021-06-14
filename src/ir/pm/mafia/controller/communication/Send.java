@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 /**
  * This class handles the process of sending data to the network!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.4
+ * @version 1.4.1
  */
 public class Send extends Runnable {
 
@@ -46,6 +46,7 @@ public class Send extends Runnable {
         this.objectOutputStream = objectOutputStream;
         interrupted = false;
         locked = false;
+        threadName = "Send";
     }
 
     /**
@@ -55,7 +56,7 @@ public class Send extends Runnable {
     public void run() {
         interrupted =false;
         Object sendObj = null;
-        while (!finished){
+        while ((!finished) && (!interrupted)){
             try {
                 sendObj = sendBox.get();
                 if(sendObj != null && (!locked)){
@@ -69,6 +70,7 @@ public class Send extends Runnable {
                 interrupted = true;
             }
         }
+        this.shutdown();
     }
 
     /**

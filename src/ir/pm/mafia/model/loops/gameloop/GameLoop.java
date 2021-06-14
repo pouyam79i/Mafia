@@ -17,7 +17,7 @@ import ir.pm.mafia.view.ui.interfaces.ChatRoomUI;
  * This is the game loop (client loop).
  * Checks game state and updates game UI!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class GameLoop extends Runnable {
 
@@ -60,6 +60,7 @@ public class GameLoop extends Runnable {
         currentUI = null;
         currentState = null;
         gameEnded = false;
+        threadName = "GameLoop";
     }
 
     /**
@@ -77,9 +78,8 @@ public class GameLoop extends Runnable {
                 if(receivedDataBox == null)
                     continue;
                 gameState = receivedDataBox.getGameState();
-                if(gameState == null)
-                    continue;
-                uiUpdater(gameState.getState());
+                if(gameState != null)
+                    uiUpdater(gameState.getState());
                 if(receivedDataBox.getData() != null)
                     sharedUIReader.put(receivedDataBox);
             }catch (Exception e){
@@ -130,7 +130,14 @@ public class GameLoop extends Runnable {
 
         // Building UI for day of game
         else if(state == State.Day){
-
+            try {
+                currentUI = new ChatRoomUI(player.getSendBox(), sharedUIReader, player.getToken(),
+                        player.getNickname(), Color.YELLOW_BOLD + "Day");
+                currentUI.start();
+            } catch (Exception e) {
+                Logger.error("Failed to build day chat room" + e.getMessage(),
+                        LogLevel.GameInterrupted, "GameLoop");
+            }
         }
 
         // Building UI for voting process
