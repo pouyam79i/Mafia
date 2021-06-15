@@ -131,8 +131,8 @@ public class AdminLauncher implements Launcher, Color {
         }
 
         // On holed
-        while (!gameLoop.isGameEnded()) Thread.onSpinWait();
-
+        while (!godLoop.isFinished()) Thread.onSpinWait();
+        while (!server.isFinished())
         // close area - shutting down all threads!
         godLoop.shutdown();
         server.shutdown();

@@ -82,4 +82,9 @@ public abstract class Runnable implements java.lang.Runnable{
         return runningState;
     }
 
+    // Getters
+    public boolean isFinished() {
+        return finished;
+    }
+
 }

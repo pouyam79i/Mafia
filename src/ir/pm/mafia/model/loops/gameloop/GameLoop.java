@@ -76,18 +76,25 @@ public class GameLoop extends Runnable {
             console.println(Color.YELLOW + "Waiting for server respond!");
         DataBox receivedDataBox = null;
         GameState gameState;
+        ArrayList<String> listOfPlayers = null;
         while (!finished){
             try {
                 receivedDataBox = (DataBox) player.getReceiveBox().get();
                 if(receivedDataBox == null)
                     continue;
                 gameState = receivedDataBox.getGameState();
-                if(gameState != null)
-                    uiUpdater(gameState.getState(), gameState.getListOfPlayers());
+                if(gameState != null){
+                    try {
+                        listOfPlayers = gameState.getListOfPlayers();
+                    }catch (Exception ignored){
+                        listOfPlayers = null;
+                    }
+                    uiUpdater(gameState.getState(), listOfPlayers);
+                }
                 if(receivedDataBox.getData() != null)
                     sharedUIReader.put(receivedDataBox);
             }catch (Exception e){
-                Logger.error("Failed in to process game loop",
+                Logger.error("Failed in to process game loop" + e.getMessage(),
                         LogLevel.GameInterrupted, "GameLoop");
             }
         }
