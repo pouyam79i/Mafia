@@ -21,7 +21,8 @@ public interface ActionNotes {
             Color.PURPLE_BOLD + "Usage" + Color.RED_BOLD + ":" +
             Color.YELLOW_BOLD + " You can save someones life,\n" +
             "if you are in mafia team,\n" +
-            "you cannot save citizens.";
+            "you cannot save citizens.\n" +
+            "Plus doctor lecter can kill if he is head of mafia.";
 
     // Mayer can dismiss voting.
     String DISMISS = Color.PURPLE_BOLD + "Action" + Color.RED_BOLD + ": " + Color.BLUE_BOLD + "Dismiss\n" +
@@ -46,6 +47,12 @@ public interface ActionNotes {
             Color.YELLOW_BOLD + " Impregnable can find dead roles!\n" +
             "except for godfather and normal citizens";     // Edit this part *******************
 
-    String EMPTY = Color.RED_BOLD + "You have no special role!";
+    // Normal mafia
+    String NORMAL_MAFIA = Color.RED_BOLD + "You have no special role!\n" +
+            "Except that you are current head of mafia!\n" +
+            "Then you can kill someone!";
+
+    // No special action
+    String EMPTY = Color.YELLOW_BOLD + "You have no special role!";
 
 }

@@ -76,6 +76,16 @@ public abstract class Character {
         return false;
     }
 
+    /**
+     * Call this at the end of applying all actions!
+     * @return boolean
+     */
+    public boolean checkPassedAway(){
+        if(!alive)
+            passedAway = true;
+        return passedAway;
+    }
+
     @Override
     public String toString(){
         if(characterName == null)
@@ -99,9 +109,6 @@ public abstract class Character {
     }
     public CharacterName getCharacterName() {
         return characterName;
-    }
-    public boolean isPassedAway() {
-        return passedAway;
     }
 
 }

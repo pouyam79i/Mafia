@@ -9,11 +9,8 @@ import ir.pm.mafia.controller.server.Server;
 import ir.pm.mafia.model.game.character.Character;
 import ir.pm.mafia.model.game.character.CharacterName;
 import ir.pm.mafia.model.game.character.Group;
-import ir.pm.mafia.model.game.logic.Day;
-import ir.pm.mafia.model.game.logic.GameStarter;
-import ir.pm.mafia.model.game.logic.Lobby;
+import ir.pm.mafia.model.game.logic.*;
 import ir.pm.mafia.model.game.handlers.PartHandler;
-import ir.pm.mafia.model.game.logic.Vote;
 import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.game.state.StateUpdater;
 import ir.pm.mafia.model.utils.logger.LogLevel;
@@ -77,6 +74,11 @@ public class GodLoop extends Runnable {
      * token of mayer
      */
     private String mayerToken;
+    /**
+     * Game starter.
+     * sets characters.
+     */
+    private GameStarter gameStarterOfThisApp;
 
     /**
      * Constructor of GodLoop
@@ -129,6 +131,7 @@ public class GodLoop extends Runnable {
         // Shutting down current part
         if(currentPart != null){
             currentPart.shutdown();
+            currentPart = null;
         }
 
         // Setting new state
@@ -160,7 +163,7 @@ public class GodLoop extends Runnable {
                     playerCharacters = null;
                 }
             }
-
+            gameStarterOfThisApp = starter;
             GameState cgs = new GameState(State.Lobby, null);
             Message message = null;
             DataBox dataBox = null;
@@ -236,7 +239,24 @@ public class GodLoop extends Runnable {
 
         // Building requirement for players action + chat room for mafia!
         else if(state == State.Night){
+            try {
+                Night night = new Night(gameStarterOfThisApp.getCitizenTeam(),
+                        gameStarterOfThisApp.getMafiaTeam(), stateUpdater);
+                night.updateClientHandlers(currentConnections);
+                night.setLock(true);
+                night.initial();
+                night.start();
+            } catch (Exception e) {
+                Logger.error("Failed to build night process!" + e.getMessage(),
+                        LogLevel.GameInterrupted, "GodLoop");
+            }
+        }
 
+        // Building requirement for players action + chat room for mafia!
+        else if(state == State.FINISHED){
+            if(currentPart != null)
+                currentPart.shutdown();
+            this.shutdown();
         }
 
     }

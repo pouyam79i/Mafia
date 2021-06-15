@@ -17,7 +17,7 @@ import java.util.UUID;
  * This class handles the connection between server and client.
  * With this class we can build multi thread server!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.6.2
+ * @version 1.6.3
  */
 public class ClientHandler extends Runnable {
 
@@ -157,6 +157,7 @@ public class ClientHandler extends Runnable {
             socket.close();
             sender.shutdown();
             receiver.shutdown();
+            clientState = ClientState.DISCONNECTED;
         } catch (IOException ignored) {}
         this.close();
     }
@@ -169,16 +170,16 @@ public class ClientHandler extends Runnable {
     public void updateClientState(ClientState newState){
         if(newState == clientState)
             return;
+        // If dead cannot end ghost mode!
+        if(clientState == ClientState.KILLED){
+            return;
+        }
         // If disconnected cannot return to the game!
-        if(clientState == ClientState.DISCONNECTED || newState == ClientState.DISCONNECTED){
+        if(newState == ClientState.DISCONNECTED){
             clientState = ClientState.DISCONNECTED;
             sender.setLocked(true);
             receiver.setLocked(true);
             this.shutdown();
-            return;
-        }
-        // If dead cannot end ghost mode!
-        if(clientState == ClientState.KILLED){
             return;
         }
         clientState = newState;

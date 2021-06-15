@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
- *
+ * UI of voting process
+ * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
+ * @version v1.0
  */
 public class VoteUI extends Interface {
 
@@ -108,7 +110,7 @@ public class VoteUI extends Interface {
             listeningState = true;
         }
         console.println(YELLOW_BOLD +
-                "**** " + PURPLE_BRIGHT + "Voting Room " + YELLOW_BOLD + " ****");
+                "**** " + PURPLE_BRIGHT + "Voting Time" + YELLOW_BOLD + " ****");
         console.println(getListOfOption());
         listeningState = false;
         display();

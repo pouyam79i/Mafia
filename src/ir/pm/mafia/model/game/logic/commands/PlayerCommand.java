@@ -4,7 +4,7 @@ package ir.pm.mafia.model.game.logic.commands;
  * This enum contains normal player commands!
  * can be used during the game
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version 1.1.2
+ * @version 1.1.3
  */
 public enum PlayerCommand {
 
@@ -16,6 +16,7 @@ public enum PlayerCommand {
     CLEAR,          // Clear decided vote or action.
     DISMISS,        // Works only for mayer to dismiss a voting.
     SKIP,           // Used to skip a part like day chat room.
-    HISTORY         // Used to print previous chatroom information.
+    HISTORY,         // Used to print previous chatroom information.
+    HELP,           // Send me how my action works!
 
 }

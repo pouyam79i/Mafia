@@ -12,6 +12,10 @@ import ir.pm.mafia.view.console.Color;
 import ir.pm.mafia.view.console.Console;
 import ir.pm.mafia.view.ui.Interface;
 import ir.pm.mafia.view.ui.interfaces.ChatRoomUI;
+import ir.pm.mafia.view.ui.interfaces.NightUI;
+import ir.pm.mafia.view.ui.interfaces.VoteUI;
+
+import java.util.ArrayList;
 
 /**
  * This is the game loop (client loop).
@@ -79,7 +83,7 @@ public class GameLoop extends Runnable {
                     continue;
                 gameState = receivedDataBox.getGameState();
                 if(gameState != null)
-                    uiUpdater(gameState.getState());
+                    uiUpdater(gameState.getState(), gameState.getListOfPlayers());
                 if(receivedDataBox.getData() != null)
                     sharedUIReader.put(receivedDataBox);
             }catch (Exception e){
@@ -104,15 +108,18 @@ public class GameLoop extends Runnable {
      * Updates Current UI!
      * According to changed state
      */
-    private void uiUpdater(State state){
+    private void uiUpdater(State state, ArrayList<String> sameStatePlayers){
         if(state == null)
             return;
         if(state == currentState)
             return;
 
         // Shutting down previous UI!
-        if(currentUI != null)
+        if(currentUI != null){
             currentUI.shutdown();
+            currentUI = null;
+        }
+
         currentState = state;
 
         // Lobby builder!
@@ -142,12 +149,25 @@ public class GameLoop extends Runnable {
 
         // Building UI for voting process
         else if(state == State.Vote){
-
+            try {
+                currentUI = new VoteUI(player.getSendBox(), sharedUIReader, player.getToken(),
+                        player.getNickname(), sameStatePlayers);
+                currentUI.start();
+            }catch (Exception e){
+                Logger.error("Failed to build vote room" + e.getMessage(),
+                        LogLevel.GameInterrupted, "GameLoop");
+            }
         }
 
         // Building UI for night
         else if(state == State.Night){
-
+            try {
+                currentUI = new NightUI(player.getSendBox(), sharedUIReader, player.getToken(),
+                        player.getNickname(), sameStatePlayers);
+            } catch (Exception e) {
+                Logger.error("Failed to build night" + e.getMessage(),
+                        LogLevel.GameInterrupted, "GameLoop");
+            }
         }
 
         // Ending the game
@@ -155,6 +175,7 @@ public class GameLoop extends Runnable {
             if(currentUI != null)
                 currentUI.shutdown();
             console.println(Color.YELLOW_BOLD + "Game Ended!");
+            this.shutdown();
             gameEnded = true;
         }
 

@@ -34,6 +34,7 @@ public class MainMenuLauncher implements Launcher{
                     // Complete this part .**************************************************************
             }
             else if(input.equals("4")){
+                System.exit(0);
                 break;
             }
         }
