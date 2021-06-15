@@ -131,7 +131,6 @@ public class GodLoop extends Runnable {
         // Shutting down current part
         if(currentPart != null){
             currentPart.shutdown();
-            currentPart = null;
         }
 
         // Setting new state
@@ -222,6 +221,7 @@ public class GodLoop extends Runnable {
 
         // Building a voter for players in a day
         else if (state == State.Vote){
+            Logger.log("Proceeding to vote", LogLevel.Report, "GodLoop");
             try {
                 Vote votingHandler = new Vote(stateUpdater, mayerToken);
                 votingHandler.updateClientHandlers(currentConnections);
@@ -239,6 +239,7 @@ public class GodLoop extends Runnable {
 
         // Building requirement for players action + chat room for mafia!
         else if(state == State.Night){
+            Logger.log("Proceeding to night", LogLevel.Report, "GodLoop");
             try {
                 Night night = new Night(gameStarterOfThisApp.getCitizenTeam(),
                         gameStarterOfThisApp.getMafiaTeam(), stateUpdater);

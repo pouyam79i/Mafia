@@ -131,6 +131,7 @@ public class GameLoop extends Runnable {
 
         // Lobby builder!
         if(state == State.Lobby){
+            Logger.log("Building Lobby", LogLevel.Report, "GameLoop");
             try {
                 currentUI = new ChatRoomUI(player.getSendBox(), sharedUIReader, player.getToken(),
                         player.getNickname(), "Lobby", false);
@@ -144,6 +145,7 @@ public class GameLoop extends Runnable {
 
         // Building UI for day of game
         else if(state == State.Day){
+            Logger.log("Building Day", LogLevel.Report, "GameLoop");
             try {
                 currentUI = new ChatRoomUI(player.getSendBox(), sharedUIReader, player.getToken(),
                         player.getNickname(), Color.YELLOW_BOLD + "Day", true);
@@ -156,6 +158,7 @@ public class GameLoop extends Runnable {
 
         // Building UI for voting process
         else if(state == State.Vote){
+            Logger.log("Building Vote", LogLevel.Report, "GameLoop");
             try {
                 currentUI = new VoteUI(player.getSendBox(), sharedUIReader, player.getToken(),
                         player.getNickname(), sameStatePlayers);
@@ -168,6 +171,7 @@ public class GameLoop extends Runnable {
 
         // Building UI for night
         else if(state == State.Night){
+            Logger.log("Building Night", LogLevel.Report, "GameLoop");
             try {
                 currentUI = new NightUI(player.getSendBox(), sharedUIReader, player.getToken(),
                         player.getNickname(), sameStatePlayers);

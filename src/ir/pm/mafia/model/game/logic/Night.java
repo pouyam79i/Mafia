@@ -55,11 +55,11 @@ public class Night extends PartHandler {
     private StateUpdater stateUpdater;
 
     /**
-     *
-     * @param citizenTeam
-     * @param mafiaTeam
-     * @param stateUpdater
-     * @throws Exception
+     * Constructor of Night
+     * @param citizenTeam team of citizen
+     * @param mafiaTeam team of mafia
+     * @param stateUpdater state updater
+     * @throws Exception if null input
      */
     public Night(ArrayList<ClientHandler> citizenTeam,
                  ArrayList<ClientHandler> mafiaTeam,

@@ -100,13 +100,13 @@ public class NightUI extends Interface {
      */
     @Override
     public void run() {
+        console.println(BLUE +
+                "**** " + PURPLE_BOLD + "Night" + BLUE + " ****");
+        console.println(getListOfOption());
         if(!listeningState){
             listener.start();
             listeningState = true;
         }
-        console.println(BLUE +
-                "**** " + PURPLE_BOLD + "Night" + BLUE + " ****");
-        console.println(getListOfOption());
         listeningState = false;
         display();
         while (!finished)
