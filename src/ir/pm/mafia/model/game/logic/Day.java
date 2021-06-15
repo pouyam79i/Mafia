@@ -1,6 +1,7 @@
 package ir.pm.mafia.model.game.logic;
 
 import ir.pm.mafia.controller.data.Data;
+import ir.pm.mafia.controller.data.DataType;
 import ir.pm.mafia.controller.data.boxes.GameState;
 import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.controller.server.ClientHandler;
@@ -21,7 +22,7 @@ import java.util.Locale;
  * It handles Day of game.
  * And also respond to normal commands of players.
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.1.1
+ * @version v1.1.2
  */
 public class Day extends PartHandler {
 
@@ -94,7 +95,7 @@ public class Day extends PartHandler {
         lastRead++;
         if(data == null)
             return;
-        if(!(data instanceof Message))
+        if(!(data.getDataType() == DataType.Message))
             return;
         Message message = (Message) data;
         // Checking commands

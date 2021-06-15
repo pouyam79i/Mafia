@@ -7,11 +7,13 @@ import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.controller.server.Server;
 import ir.pm.mafia.model.game.character.Character;
+import ir.pm.mafia.model.game.character.CharacterName;
 import ir.pm.mafia.model.game.character.Group;
 import ir.pm.mafia.model.game.logic.Day;
 import ir.pm.mafia.model.game.logic.GameStarter;
 import ir.pm.mafia.model.game.logic.Lobby;
 import ir.pm.mafia.model.game.handlers.PartHandler;
+import ir.pm.mafia.model.game.logic.Vote;
 import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.game.state.StateUpdater;
 import ir.pm.mafia.model.utils.logger.LogLevel;
@@ -71,6 +73,10 @@ public class GodLoop extends Runnable {
      * character of player
      */
     private HashMap<ClientHandler, Character> playerCharacters;
+    /**
+     * token of mayer
+     */
+    private String mayerToken;
 
     /**
      * Constructor of GodLoop
@@ -165,6 +171,9 @@ public class GodLoop extends Runnable {
                                     Color.RED_BOLD + playerCharacters.get(ch).toString());
                 }
                 else {
+                    if(playerCharacters.get(ch).getCharacterName() == CharacterName.Mayer){
+                        mayerToken = ch.getToken();
+                    }
                     message = new Message(null, Color.BLUE_BOLD + "GOD",
                             Color.PURPLE_BOLD + "You are " +
                                     Color.GREEN_BOLD + playerCharacters.get(ch).toString());
@@ -210,7 +219,19 @@ public class GodLoop extends Runnable {
 
         // Building a voter for players in a day
         else if (state == State.Vote){
-
+            try {
+                Vote votingHandler = new Vote(stateUpdater, mayerToken);
+                votingHandler.updateClientHandlers(currentConnections);
+                votingHandler.setLock(true);
+                votingHandler.resetGhostClients();
+                votingHandler.initial();
+                stateUpdater.advance();
+                votingHandler.start();
+                currentPart = votingHandler;
+            } catch (Exception e) {
+                Logger.error("Failed to build voting process!" + e.getMessage(),
+                        LogLevel.GameInterrupted, "GodLoop");
+            }
         }
 
         // Building requirement for players action + chat room for mafia!

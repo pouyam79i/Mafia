@@ -5,7 +5,7 @@ import ir.pm.mafia.model.utils.multithreading.Runnable;
 /**
  * This class sets game state according to the timer they got!
  * @author Pouya Mohammadi - CE@AUT - Uni ID:9829039
- * @version v1.0.3
+ * @version v1.0.4
  */
 public class StateUpdater extends Runnable {
 
@@ -80,6 +80,7 @@ public class StateUpdater extends Runnable {
                 } catch (InterruptedException ignored) {}
             }
             // Hold before next state
+            currentState = State.CHECK;
             while (!advance) Thread.onSpinWait();
             advance = false;
             if(gameFinished){
@@ -88,8 +89,6 @@ public class StateUpdater extends Runnable {
                 break;              // Just in case :)
             }
             // Hold before next state
-            while (!advance) Thread.onSpinWait();
-            advance = false;
             currentState = State.Day;
             for(int i = 0; i < dayTimer; i++){
                 try {
@@ -101,14 +100,17 @@ public class StateUpdater extends Runnable {
                 } catch (InterruptedException ignored) {}
             }
             // Hold before next state
+            currentState = State.Vote;
             while (!advance) Thread.onSpinWait();
             advance = false;
-            currentState = State.Vote;
             for(int i = 0; i < voteTimer; i++){
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignored) {}
             }
+            currentState = State.VoteEnded;
+            while (!advance) Thread.onSpinWait();
+            advance = false;
         }
     }
 

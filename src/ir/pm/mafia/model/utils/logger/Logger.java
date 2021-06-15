@@ -42,7 +42,7 @@ public class Logger {
     /**
      * When debug is true mode we print logs and errors!
      */
-    private static boolean debugMode = false;
+    private static boolean debugMode = true;
 
     /**
      * Constructor of logger

@@ -222,7 +222,7 @@ public abstract class PartHandler extends Runnable {
         if(messageText == null || userToken == null)
             return;
         Message message = new Message(null, Color.BLUE_BOLD + "SERVER", messageText);
-        message.setReceiverToke(userToken);
+        message.setReceiverToken(userToken);
         send(message);
     }
 
@@ -246,6 +246,20 @@ public abstract class PartHandler extends Runnable {
             return null;
         for (ClientHandler ch : clientHandlers)
             if(ch.getToken().equals(token))
+                return ch;
+        return null;
+    }
+
+    /**
+     * Finds a client handler by its nickname
+     * @param nickname of client handler
+     * @return ClientHandler, if not found returns null
+     */
+    protected ClientHandler getClientHandlerByName(String nickname){
+        if(clientHandlers == null)
+            return null;
+        for (ClientHandler ch : clientHandlers)
+            if(ch.getNickname().equals(nickname))
                 return ch;
         return null;
     }

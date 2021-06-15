@@ -2,6 +2,7 @@ package ir.pm.mafia.model.game.logic;
 
 import ir.pm.mafia.controller.data.Data;
 import ir.pm.mafia.controller.data.DataBox;
+import ir.pm.mafia.controller.data.DataType;
 import ir.pm.mafia.controller.data.boxes.GameState;
 import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.controller.server.ClientHandler;
@@ -126,7 +127,7 @@ public class Lobby extends PartHandler {
         lastRead++;
         if(data == null)
             return;
-        if(!(data instanceof Message))
+        if(!(data.getDataType() == DataType.Message))
             return;
         Message message = (Message) data;
         // Checking commands
@@ -154,7 +155,7 @@ public class Lobby extends PartHandler {
         if(messageText == null || userToken == null)
             return;
         Message message = new Message(null, Color.BLUE_BOLD + "SERVER", messageText);
-        message.setReceiverToke(userToken);
+        message.setReceiverToken(userToken);
         send(message);
     }
 
