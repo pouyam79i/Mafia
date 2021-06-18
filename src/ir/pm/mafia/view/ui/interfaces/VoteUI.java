@@ -200,10 +200,12 @@ public class VoteUI extends Interface {
             return list.toString();
         }
         for(String name : alivePlayers){
+            list.append("\n");
             if(name.equals(myName))
                 list.append(PURPLE_BOLD).append(index).append(" - ").append(name).append(" (You cant vote for yourself)");
             else
-                list.append(BLUE_BRIGHT).append(index).append(" - ").append(name);
+                list.append(GREEN_BOLD).append(index).append(" - ").append(name);
+            index++;
         }
         return list.toString();
     }

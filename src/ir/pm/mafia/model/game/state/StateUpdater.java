@@ -1,5 +1,7 @@
 package ir.pm.mafia.model.game.state;
 
+import ir.pm.mafia.model.utils.logger.LogLevel;
+import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
 /**
@@ -12,7 +14,7 @@ public class StateUpdater extends Runnable {
     /**
      * Contains current state of game
      */
-    private State currentState;
+    private volatile State currentState;
     /**
      * Tells if game has started!
      */
@@ -46,7 +48,7 @@ public class StateUpdater extends Runnable {
         currentState =  State.Lobby;
         dayTimer = 300;              // 5 mints
         voteTimer = 60;              // 1 mints
-        nightTimer = 120;            // 2 mints
+        nightTimer = 60;            // 1 mints
         gameStarted = false;
         gameFinished = false;
         advance = false;
@@ -66,11 +68,13 @@ public class StateUpdater extends Runnable {
         // waiting in lobby
         currentState = State.Lobby;
         while (!gameStarted) Thread.onSpinWait();
+        Logger.log("Time of lobby finished!", LogLevel.Report, "StateUpdater");
         // calling to start
         currentState = State.STARTED;
         // Waiting for other threads to prepare!
         while (!advance) Thread.onSpinWait();
         advance = false;
+        Logger.log("Starting finished!", LogLevel.Report, "StateUpdater");
         // Starting the game!
         while (!finished){
             currentState = State.Night;
@@ -81,6 +85,7 @@ public class StateUpdater extends Runnable {
             }
             // Hold before next state
             currentState = State.CHECK;
+            Logger.log("Time of night finished!", LogLevel.Report, "StateUpdater");
             while (!advance) Thread.onSpinWait();
             advance = false;
             if(gameFinished){
@@ -88,6 +93,7 @@ public class StateUpdater extends Runnable {
                 this.shutdown();
                 break;              // Just in case :)
             }
+            Logger.log("Time of check finished!", LogLevel.Report, "StateUpdater");
             // Hold before next state
             currentState = State.Day;
             for(int i = 0; i < dayTimer; i++){
@@ -99,6 +105,7 @@ public class StateUpdater extends Runnable {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignored) {}
             }
+            Logger.log("Time of day finished!", LogLevel.Report, "StateUpdater");
             // Hold before next state
             currentState = State.Vote;
             while (!advance) Thread.onSpinWait();
@@ -108,9 +115,11 @@ public class StateUpdater extends Runnable {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignored) {}
             }
+            Logger.log("Time of vote finished!", LogLevel.Report, "StateUpdater");
             currentState = State.VoteEnded;
             while (!advance) Thread.onSpinWait();
             advance = false;
+            Logger.log("end of loop!", LogLevel.Report, "StateUpdater");
         }
     }
 
@@ -123,7 +132,8 @@ public class StateUpdater extends Runnable {
     public void setGameFinished(boolean gameFinished) {
         if(!gameStarted)
             return;
-        this.gameFinished = gameFinished;
+        if(gameFinished)
+            this.gameFinished = true;
     }
     public boolean setDayTimer(int dayTimer) {
         if(gameStarted)

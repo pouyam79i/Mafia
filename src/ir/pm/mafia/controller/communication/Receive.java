@@ -69,10 +69,10 @@ public class Receive extends Runnable {
                         receiveBox.put(dataBox);
                 }
             } catch (Exception e) {
-                Logger.error("Failed while receiving data: " + e.getMessage(),
-                        LogLevel.ThreadWarning,
-                        "communication.Receive");
-                interrupted = true;
+//                Logger.error("Failed while receiving data: " + e.getMessage(),
+//                        LogLevel.ThreadWarning,
+//                        "communication.Receive");
+//                interrupted = true;
             }
         }
         this.shutdown();

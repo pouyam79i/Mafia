@@ -20,6 +20,8 @@ import ir.pm.mafia.model.game.handlers.SenderHandler;
 import ir.pm.mafia.model.game.logic.commands.PlayerCommand;
 import ir.pm.mafia.model.game.state.State;
 import ir.pm.mafia.model.game.state.StateUpdater;
+import ir.pm.mafia.model.utils.logger.LogLevel;
+import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.view.console.Color;
 
 import java.util.ArrayList;
@@ -94,8 +96,11 @@ public class Night extends PartHandler {
 
     @Override
     public void shutdown(){
+        System.out.println("Inside Night shutdown");
         finished = true;
         applyActions();
+        System.out.println("Inside Night shutdown --- Logic Applied");
+        Logger.log("Actions are applied!", LogLevel.Report, "Night");
         if(checkGameEnd() != Group.NULL){
             stateUpdater.setGameFinished(true);
             sendFinishedState();
@@ -103,7 +108,9 @@ public class Night extends PartHandler {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {}
         }
+        Logger.log("End of check end game", LogLevel.Report, "Night");
         stateUpdater.advance();
+        System.out.println("Advancing ...");
         for(ReceiverHandler rh : receiverHandlers){
             rh.shutdown();
         }
@@ -111,6 +118,7 @@ public class Night extends PartHandler {
             sh.shutdown();
         }
         this.close();
+        Logger.log("Night closed!", LogLevel.Report, "Night");
     }
 
     /**

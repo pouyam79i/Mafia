@@ -81,7 +81,7 @@ public class PlayerLauncher implements Launcher, Color {
         }
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
             // On holed
             while (client.isConnected()) Thread.onSpinWait();
             console.println(Color.YELLOW_BOLD + "Leaving server...");

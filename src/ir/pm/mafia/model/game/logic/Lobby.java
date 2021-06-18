@@ -359,6 +359,11 @@ public class Lobby extends PartHandler {
             if(clientHandler != null){
                 clientHandler.shutdown();
                 refreshSRHandlersList();
+                if(senderHandlers.size() < 6){
+                    startCall = false;
+                    resetConfirmations();
+                    sendToAll(Color.RED + "Starting ended! not enough players!");
+                }
                 sendToAll(Color.RED_BOLD + userCommandMessage.getSenderName() + " left the lobby!");
                 return;
             }

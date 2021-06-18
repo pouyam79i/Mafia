@@ -175,6 +175,7 @@ public class GameLoop extends Runnable {
             try {
                 currentUI = new NightUI(player.getSendBox(), sharedUIReader, player.getToken(),
                         player.getNickname(), sameStatePlayers);
+                currentUI.start();
             } catch (Exception e) {
                 Logger.error("Failed to build night" + e.getMessage(),
                         LogLevel.GameInterrupted, "GameLoop");

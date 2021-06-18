@@ -93,6 +93,7 @@ public class NightUI extends Interface {
             return;
         DataBox dataBox = new DataBox(null, data);
         sendBox.put(dataBox);
+        Logger.log("Sending data to server...", LogLevel.Report, "NightUI");
     }
 
     /**
@@ -150,7 +151,8 @@ public class NightUI extends Interface {
                         return null;
                     }
                 console.println(Color.GREEN_BOLD + "Sending action...");
-                return new Message(myToken, myName, playerName);
+                return new Message(myToken, myName, "@" +
+                        PlayerCommand.ACTION.toString() + " " + playerName);
             }catch (Exception e){
                 console.println(Color.RED + "Invalid input");
                 return null;
@@ -158,6 +160,15 @@ public class NightUI extends Interface {
         }
         // HELP command ---> send my a help note
         else if(input.startsWith("@" + PlayerCommand.HELP.toString())){
+            try {
+                return new Message(myToken, myName, "@" + PlayerCommand.HELP.toString());
+            }catch (Exception e){
+                console.println(Color.RED + "Invalid input");
+                return null;
+            }
+        }
+        // LIST command returns list of options
+        else if(input.startsWith("@" + PlayerCommand.LIST.toString())){
             try {
                 return new Message(myToken, myName, "@" + PlayerCommand.HELP.toString());
             }catch (Exception e){
@@ -180,10 +191,12 @@ public class NightUI extends Interface {
             return list.toString();
         }
         for(String name : alivePlayers){
+            list.append("\n");
             if(name.equals(myName))
-                list.append(PURPLE_BOLD).append(index).append(" - ").append(name).append(" (You cant vote for yourself)");
+                list.append(PURPLE_BOLD).append(index).append(" - ").append(name).append(" (You)");
             else
-                list.append(BLUE_BRIGHT).append(index).append(" - ").append(name);
+                list.append(BLUE_BOLD).append(index).append(" - ").append(name);
+            index++;
         }
         return list.toString();
     }

@@ -244,8 +244,8 @@ public class GodLoop extends Runnable {
                 Night night = new Night(gameStarterOfThisApp.getCitizenTeam(),
                         gameStarterOfThisApp.getMafiaTeam(), stateUpdater);
                 night.updateClientHandlers(currentConnections);
-                night.setLock(true);
                 night.initial();
+                night.setLock(true);
                 night.start();
             } catch (Exception e) {
                 Logger.error("Failed to build night process!" + e.getMessage(),
