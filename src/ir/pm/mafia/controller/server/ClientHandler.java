@@ -3,7 +3,7 @@ package ir.pm.mafia.controller.server;
 import ir.pm.mafia.controller.communication.Receive;
 import ir.pm.mafia.controller.communication.Send;
 import ir.pm.mafia.controller.data.DataBox;
-import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.utils.memory.SharedMemory;
 import ir.pm.mafia.model.game.character.Character;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;

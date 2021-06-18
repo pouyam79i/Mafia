@@ -1,7 +1,7 @@
 package ir.pm.mafia.model.game.handlers;
 
 import ir.pm.mafia.controller.data.Data;
-import ir.pm.mafia.controller.data.DataBase;
+import ir.pm.mafia.model.utils.memory.DataBase;
 import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.server.ClientHandler;
 import ir.pm.mafia.model.utils.multithreading.Runnable;

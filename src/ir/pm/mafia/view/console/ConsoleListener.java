@@ -1,6 +1,6 @@
 package ir.pm.mafia.view.console;
 
-import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.utils.memory.SharedMemory;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 
 import java.nio.charset.StandardCharsets;

@@ -1,6 +1,6 @@
 package ir.pm.mafia.controller.server;
 
-import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.utils.memory.SharedMemory;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;
 import ir.pm.mafia.model.utils.multithreading.Runnable;

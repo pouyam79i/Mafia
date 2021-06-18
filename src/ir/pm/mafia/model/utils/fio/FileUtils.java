@@ -1,6 +1,6 @@
 package ir.pm.mafia.model.utils.fio;
 
-import ir.pm.mafia.controller.data.DataBase;
+import ir.pm.mafia.model.utils.memory.DataBase;
 import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.model.utils.logger.LogLevel;
 import ir.pm.mafia.model.utils.logger.Logger;

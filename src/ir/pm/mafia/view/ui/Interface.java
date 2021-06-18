@@ -1,6 +1,6 @@
 package ir.pm.mafia.view.ui;
 
-import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.utils.memory.SharedMemory;
 import ir.pm.mafia.model.utils.multithreading.Runnable;
 import ir.pm.mafia.view.console.Color;
 import ir.pm.mafia.view.console.Console;

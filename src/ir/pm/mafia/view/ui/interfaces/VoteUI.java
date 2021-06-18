@@ -3,7 +3,7 @@ package ir.pm.mafia.view.ui.interfaces;
 import ir.pm.mafia.controller.data.Data;
 import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.DataType;
-import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.utils.memory.SharedMemory;
 import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.controller.data.boxes.Vote;
 import ir.pm.mafia.model.game.logic.commands.PlayerCommand;

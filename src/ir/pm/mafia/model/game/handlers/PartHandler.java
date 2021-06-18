@@ -1,6 +1,6 @@
 package ir.pm.mafia.model.game.handlers;
 
-import ir.pm.mafia.controller.data.DataBase;
+import ir.pm.mafia.model.utils.memory.DataBase;
 import ir.pm.mafia.controller.data.DataBox;
 import ir.pm.mafia.controller.data.boxes.GameState;
 import ir.pm.mafia.controller.data.boxes.Message;

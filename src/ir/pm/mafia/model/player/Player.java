@@ -1,6 +1,6 @@
 package ir.pm.mafia.model.player;
 
-import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.utils.memory.SharedMemory;
 import ir.pm.mafia.view.console.Color;
 import ir.pm.mafia.view.console.Console;
 

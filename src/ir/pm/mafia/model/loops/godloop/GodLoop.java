@@ -1,7 +1,7 @@
 package ir.pm.mafia.model.loops.godloop;
 
 import ir.pm.mafia.controller.data.DataBox;
-import ir.pm.mafia.controller.data.SharedMemory;
+import ir.pm.mafia.model.utils.memory.SharedMemory;
 import ir.pm.mafia.controller.data.boxes.GameState;
 import ir.pm.mafia.controller.data.boxes.Message;
 import ir.pm.mafia.controller.server.ClientHandler;

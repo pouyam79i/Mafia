@@ -1,4 +1,4 @@
-package ir.pm.mafia.controller.data;
+package ir.pm.mafia.model.utils.memory;
 
 import java.util.LinkedList;
 
