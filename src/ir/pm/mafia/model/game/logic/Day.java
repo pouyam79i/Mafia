@@ -210,7 +210,7 @@ public class Day extends PartHandler {
         if(!skipCalled)
             return false;
         try{
-            for(ClientHandler ch : new ArrayList<ClientHandler>(clientHandlers)){
+            for(ClientHandler ch : clientHandlers){
                 if(ch.getClientState() != ClientState.ALIVE)
                     continue;
                 if(confirmations.containsKey(ch.getToken())) {

@@ -247,6 +247,7 @@ public class GodLoop extends Runnable {
                 night.initial();
                 night.setLock(true);
                 night.start();
+                currentPart = night;
             } catch (Exception e) {
                 Logger.error("Failed to build night process!" + e.getMessage(),
                         LogLevel.GameInterrupted, "GodLoop");
@@ -259,7 +260,6 @@ public class GodLoop extends Runnable {
                 currentPart.shutdown();
             this.shutdown();
         }
-
     }
 
     /**

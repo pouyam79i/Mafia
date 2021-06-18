@@ -96,10 +96,8 @@ public class Night extends PartHandler {
 
     @Override
     public void shutdown(){
-        System.out.println("Inside Night shutdown");
         finished = true;
         applyActions();
-        System.out.println("Inside Night shutdown --- Logic Applied");
         Logger.log("Actions are applied!", LogLevel.Report, "Night");
         if(checkGameEnd() != Group.NULL){
             stateUpdater.setGameFinished(true);
@@ -110,7 +108,6 @@ public class Night extends PartHandler {
         }
         Logger.log("End of check end game", LogLevel.Report, "Night");
         stateUpdater.advance();
-        System.out.println("Advancing ...");
         for(ReceiverHandler rh : receiverHandlers){
             rh.shutdown();
         }

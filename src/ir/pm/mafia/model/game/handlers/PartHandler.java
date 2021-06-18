@@ -221,7 +221,7 @@ public abstract class PartHandler extends Runnable {
     protected void sendToUser(String messageText, String userToken){
         if(messageText == null || userToken == null)
             return;
-        Message message = new Message(null, Color.BLUE_BOLD + "SERVER", messageText);
+        Message message = new Message(null, Color.BLUE_BOLD + "GOD", messageText);
         message.setReceiverToken(userToken);
         send(message);
     }

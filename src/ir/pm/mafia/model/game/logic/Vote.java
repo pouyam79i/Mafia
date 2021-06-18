@@ -33,11 +33,11 @@ public class Vote extends PartHandler {
      * and the number of vote that!
      * this.PlayerToken ---> the player that this.Player voted for
      */
-    private HashMap<String , String> votesOfPlayers;
+    private final HashMap<String , String> votesOfPlayers;
     /**
      * number of gathered vote for a player
      */
-    private HashMap<String, Integer> numberOfGatheredVotes;
+    private final HashMap<String, Integer> numberOfGatheredVotes;
     /**
      * Mayer token is used to confirm dismiss!
      */
@@ -170,8 +170,10 @@ public class Vote extends PartHandler {
             else {
                 ClientHandler ch = null;
                 ch = getClientHandlerByName(vote.getTarget());
-                if(ch == null)
+                if(ch == null){
                     sendToUser(Color.RED_BOLD + "This player does not exist!", userToken);
+                    return;
+                }
                 if(ch.getClientState() == ClientState.ALIVE || ch.getClientState() == ClientState.GHOST){
                     setVote(userToken, ch.getToken());
                 }
@@ -197,7 +199,7 @@ public class Vote extends PartHandler {
      * @return string if one max is found! else return null
      */
     private String checkResult(){
-        AtomicReference<String> tokenOfResult = null;
+        AtomicReference<String> tokenOfResult = new AtomicReference<String>();
         AtomicInteger max = new AtomicInteger();
         AtomicInteger numberOfCurrentVotes = new AtomicInteger();
         votesOfPlayers.forEach((playerToken, voteToken) -> {
